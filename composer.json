@@ -1,0 +1,15 @@
+{
+    "name": "milos/dentists",
+    "autoload": {
+        "psr-4": {
+            "Milos\\Dentists\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Milos Popovic",
+            "email": "milos.pop.004@gmail.com"
+        }
+    ],
+    "require": {}
+}
