@@ -13,4 +13,9 @@ class Request
     {
         return $_SERVER['REQUEST_URI'];
     }
+
+    public function getPostBody(): array
+    {
+        return json_decode(file_get_contents('php://input'), true);
+    }
 }
