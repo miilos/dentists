@@ -27,6 +27,10 @@ class Validator
             $errors['email'][] = 'This email is already taken';
         }
 
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'][] = 'Not a valid email format';
+        }
+
         if (!$data['phone']) {
             $errors['phone'][] = 'Phone number is required';
         }

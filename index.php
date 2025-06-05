@@ -8,6 +8,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
+const ROOT_PATH = __DIR__;
+
 $router = new Router(new Request());
 
 $router->registerRoutes([
