@@ -8,6 +8,7 @@ use Milos\Dentists\Core\Response\JSONResponse;
 use Milos\Dentists\Core\Route;
 use Milos\Dentists\Model\UserModel;
 use Milos\Dentists\Service\Mailer;
+use Milos\Dentists\Service\SessionManager;
 use Milos\Dentists\Service\TokenGenerator;
 use Milos\Dentists\Service\Validator;
 
@@ -28,7 +29,6 @@ class AuthController extends BaseController
         $data['activation_token'] = $token;
 
         $status = $model->createUser($data);
-
         if (!$status) {
             throw new APIException('Something went wrong while creating your account', 500);
         }
@@ -72,6 +72,35 @@ class AuthController extends BaseController
         return $this->json([
             'status' => 'success',
             'message' => 'Account activated!'
+        ]);
+    }
+
+    #[Route(path: '/api/login', method: 'post')]
+    public function login(Request $req): JSONResponse
+    {
+        $data = $req->getPostBody();
+
+        if (!$data['email'] || !$data['password']) {
+            throw new APIException('Missing email or password!', 400);
+        }
+
+        $model = new UserModel();
+        $user = $model->getUserByEmail($data['email']);
+
+        if (!$user || !password_verify($data['password'], $user['password'])) {
+            throw new APIException('Incorrect email or password!', 400);
+        }
+
+        if ($user['is_banned']) {
+            throw new APIException('You are banned!', 400);
+        }
+
+        unset($user['password']);
+        SessionManager::set('user', $user);
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Login successful!'
         ]);
     }
 }

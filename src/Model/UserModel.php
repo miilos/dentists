@@ -45,4 +45,20 @@ class UserModel
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
+
+    public function getUserByEmail(string $email): array
+    {
+        $dbh = Db::getConnection();
+        $query = 'SELECT id, first_name, last_name, email, phone, password, is_active, is_banned, role FROM user WHERE email = :email LIMIT 1 ';
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':email', $email);
+        $stmt->execute();
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            return [];
+        }
+
+        return $user;
+    }
 }
