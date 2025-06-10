@@ -1,5 +1,6 @@
 <?php
 
+use Milos\Dentists\Controller\DentistController;
 use Milos\Dentists\Core\Router;
 use Milos\Dentists\Core\Request;
 use Milos\Dentists\Controller\AuthController;
@@ -13,7 +14,8 @@ const ROOT_PATH = __DIR__;
 $router = new Router(new Request());
 
 $router->registerRoutes([
-    AuthController::class
+    AuthController::class,
+    DentistController::class,
 ]);
 
 $router->resolve();
