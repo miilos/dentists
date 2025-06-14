@@ -3,11 +3,14 @@
 namespace Milos\Dentists\Core;
 
 use Milos\Dentists\Core\Exception\APIException;
+use Milos\Dentists\Core\Middleware\Middleware;
 use Milos\Dentists\Core\Response\JSONResponse;
+use ReflectionClass;
 
 class Router
 {
     private array $routes = [];
+    private array $middleware = [];
     private Request $req;
 
     public function __construct(Request $req)
@@ -18,6 +21,11 @@ class Router
     private function registerRoute(string $route, string $method, array $action): void
     {
         $this->routes[$method][$route] = $action;
+    }
+
+    public function registerMiddlewareFn(string $function, array $middleware, array $args): void
+    {
+        $this->middleware[$function][] = ['function' => $middleware, 'args' => $args];
     }
 
     public function registerRoutes(array $controllers): void
@@ -31,6 +39,22 @@ class Router
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
                     $this->registerRoute($route->path, $route->method, [$controller, $method->getName()]);
+                }
+            }
+        }
+    }
+
+    public function registerMiddleware(array $controllers): void
+    {
+        foreach ($controllers as $controller) {
+            $reflectionController = new \ReflectionClass($controller);
+
+            foreach ($reflectionController->getMethods() as $method) {
+                $mwAttributes = $method->getAttributes(Middleware::class);
+
+                foreach ($mwAttributes as $attribute) {
+                    $middleware = $attribute->newInstance();
+                    $this->registerMiddlewareFn($method->getName(), $middleware->function, $middleware->args);
                 }
             }
         }
@@ -100,6 +124,19 @@ class Router
 
             if (class_exists($class) && method_exists($class, $controller)) {
                 $class = new $class();
+
+                // if there's middleware registered to a function with this name, call the mw stack
+                if (isset($this->middleware[$controller])) {
+                    foreach ($this->middleware[$controller] as $middleware) {
+                        [$mwClass, $mwMethod] = $middleware['function'];
+
+                        if (class_exists($mwClass) && method_exists($mwClass, $mwMethod)) {
+                            $mwClass = new $mwClass();
+                            call_user_func_array([$mwClass, $mwMethod], ['req' => $this->req, 'args' => $middleware['args']]);
+                        }
+                    }
+                }
+
                 $res = call_user_func_array([$class, $controller], ['req' => $this->req]);
             }
         }

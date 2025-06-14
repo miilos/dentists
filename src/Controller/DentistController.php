@@ -3,6 +3,8 @@
 namespace Milos\Dentists\Controller;
 
 use Milos\Dentists\Core\Exception\APIException;
+use Milos\Dentists\Core\Middleware\AuthMiddleware;
+use Milos\Dentists\Core\Middleware\Middleware;
 use Milos\Dentists\Core\Request;
 use Milos\Dentists\Core\Response\JSONResponse;
 use Milos\Dentists\Core\Route;
@@ -11,6 +13,8 @@ use Milos\Dentists\Model\DentistModel;
 class DentistController extends BaseController
 {
     #[Route(path: '/api/dentists', method: 'get')]
+    #[Middleware([AuthMiddleware::class, 'authenticate'])]
+    #[Middleware([AuthMiddleware::class, 'authorize'], args: ['user'])]
     public function getAllDentists(Request $req): JsonResponse
     {
         $model = new DentistModel();

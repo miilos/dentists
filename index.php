@@ -18,4 +18,8 @@ $router->registerRoutes([
     DentistController::class,
 ]);
 
+$router->registerMiddleware([
+    DentistController::class
+]);
+
 $router->resolve();
