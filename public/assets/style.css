@@ -1,0 +1,55 @@
+body {
+    font-family: "Lora", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+html{
+    scroll-behavior: smooth;
+}
+* {
+    box-sizing: border-box;
+}
+
+.card {
+    border: 2px solid #1E2B40;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    text-decoration: underline;
+}
+
+.btn{
+    background-color: #4B6387;
+    border: 1px solid #1E2B40;
+    color: #FFFFFF;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #A3C5F1;
+    color: #212529;
+}
+
+.doctor-section{
+    padding: 1rem;
+}
+
+.navbar{
+    background-color: #A3C5F1;
+    font-size: 18px;
+}
+.form-container{
+    border: 2px solid #4B6387;
+    border-radius: 0.5rem;
+    padding: 30px;
+}
+footer{
+    background-color: #A3C5F1;
+}
