@@ -38,7 +38,7 @@ class Router
 
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
-                    $this->registerRoute($route->path, $route->method, [$controller, $method->getName()]);
+                    $this->registerRoute('/dentists'.$route->path, $route->method, [$controller, $method->getName()]);
                 }
             }
         }
@@ -118,7 +118,6 @@ class Router
             // if the route has a parameter, like {id}, $path doesn't contain the placeholder, but the value
             // in order for the controller to be fetched from the $routes array, $params[0] has to be
             // used, because it contains the parameter placeholder
-
             [$class, $controller] = $this->routes[$method][$params[0]];
             $res = null;
 

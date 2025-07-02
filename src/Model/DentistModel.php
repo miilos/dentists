@@ -26,6 +26,15 @@ class DentistModel
             $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             $dentist['services'] = $services;
 
+            $specialization = null;
+            $specializationQuery = "SELECT s.name FROM dentist d INNER JOIN dentist_specialization ds ON d.id = ds.dentist_id INNER JOIN specialization s ON ds.specialization_id = s.id WHERE d.id = :dentist_id";
+            $stmt = $dbh->prepare($specializationQuery);
+            $stmt->bindValue(':dentist_id', $dentist['id']);
+            $stmt->execute();
+
+            $specialization = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $dentist['specialization'] = $specialization['name'];
+
             $res[] = $dentist;
         }
 
@@ -49,9 +58,19 @@ class DentistModel
         $servicesStmt = $dbh->prepare($servicesQuery);
         $servicesStmt->bindValue(':dentist_id', $id);
         $servicesStmt->execute();
-        $services = $servicesStmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        $services = $servicesStmt->fetchAll(\PDO::FETCH_ASSOC);
         $dentist['services'] = $services;
+
+        $specialization = null;
+        $specializationQuery = "SELECT s.name FROM dentist d INNER JOIN dentist_specialization ds ON d.id = ds.dentist_id INNER JOIN specialization s ON ds.specialization_id = s.id WHERE d.id = :dentist_id";
+        $stmt = $dbh->prepare($specializationQuery);
+        $stmt->bindValue(':dentist_id', $dentist['id']);
+        $stmt->execute();
+
+        $specialization = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $dentist['specialization'] = $specialization['name'];
+
         return $dentist;
     }
 }
