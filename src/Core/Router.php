@@ -161,6 +161,12 @@ class Router
                 ], $e->statusCode);
             }
         }
+        catch (\Throwable $t) {
+            $res = new JSONResponse([
+                'status' => 'fail',
+                'message' => $t->getMessage(),
+            ], 500);
+        }
         finally {
             if (null === $res) {
                 $res = new JSONResponse([

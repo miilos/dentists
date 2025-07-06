@@ -31,4 +31,40 @@ class AppointmentController extends BaseController
             ]
         ]);
     }
+
+    #[Route(path: '/api/appointments/active', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['user'])]
+    public function getActiveAppointmentsForUser(Request $req): JsonResponse
+    {
+        $userId = $req->user['id'];
+
+        $model = new AppointmentModel();
+        $activeAppointments = $model->getActiveAppointmentsForUser($userId);
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'appointments' => $activeAppointments
+            ]
+        ]);
+    }
+
+    #[Route(path: '/api/appointments', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['user'])]
+    public function getAllAppointmentsForUser(Request $req): JsonResponse
+    {
+        $userId = $req->user['id'];
+
+        $model = new AppointmentModel();
+        $appointments = $model->getAllAppointmentsForUser($userId);
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'appointments' => $appointments
+            ]
+        ]);
+    }
 }
