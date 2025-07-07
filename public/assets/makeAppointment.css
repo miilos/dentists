@@ -1,0 +1,130 @@
+:root {
+    --color-primary: #A3C5F1;
+    --color-dark: #1E2B40;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.container-main {
+    margin: 30px;
+    width: min-content;
+}
+
+.dentist-info {
+    display: flex;
+    gap: 10px;
+}
+
+.dentist-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+}
+
+.dentist-info-text > p {
+    margin-bottom: 0;
+}
+
+.dentist-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.appointment-data {
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: #7c7c7c 0 0 10px;
+
+    display: flex;
+    gap: 30px;
+}
+
+.services-selection {
+    width: max-content;
+}
+
+.service {
+    width: 100%;
+    padding: 20px 10px;
+    border-bottom: 1px solid var(--color-dark);
+
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.service-name {
+    width: min-content;
+}
+
+.service:nth-child(odd) {
+    background-color: var(--color-primary);
+}
+
+.appointment-total {
+    padding: 20px 10px;
+    border-bottom: 1px solid var(--color-dark);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.total-text {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.appointment-total-info {
+    font-size: 18px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 10px;
+}
+
+#calendar {
+    width: 400px;
+    height: 400px;
+}
+
+.book-container {
+    background-color: var(--color-primary);
+    padding: 20px 30px;
+    border-radius: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.book-appointment-title {
+    margin-bottom: 0;
+}
+
+.book-btn {
+    background-color: #fff;
+    color: #000;
+    border-radius: 25px;
+    border: none;
+    padding: 10px 20px;
+    transition: .3s;
+}
+
+.book-btn:focus {
+    outline: none;
+}
+
+.book-btn:hover {
+    transform: scale(1.05, 1.05);
+}
+
+/* style for booked appointments in the calendar */
+.unavailable {
+    background-color: rgba(163, 197, 241, 0.7) !important;
+    cursor: not-allowed;
+}

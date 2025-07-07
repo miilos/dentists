@@ -171,4 +171,20 @@ class AppointmentModel
 
         return $appointments;
     }
+
+    public function getAllAppointmentsForDentist(int $id): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT * FROM appointment WHERE dentist_id = :id AND scheduled_at > NOW()";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        $appointments = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!$appointments) {
+            return [];
+        }
+
+        return $appointments;
+    }
 }

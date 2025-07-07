@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/makeAppointment.css">
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.18/index.global.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js'></script>
+    <script src="assets/initCalendar.js"></script>
+    <title>Make an appointment</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="public/signup.html">Signup</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid container-main px-0">
+        <h1 class="title">Make an appointment</h1>
+
+        <div class="container-fluid d-flex flex-column px-0 mt-5 container-appointment">
+            <h6 class="user-header">You're making an appointment as: <b>user_fname user_lname</b>, with: </h4>
+
+            <div class="dentist-info mt-2">
+                <img src="./img/john_smith.jpg" alt="dentist" class="dentist-img">
+
+                <div class="dentist-info-text">
+                    <p class="dentist-name">John Smith</p>
+                    <p class="dentist-specialization">orthodontist</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="appointment-data mt-5">
+            <div class="services-selection">
+                <h3 class="services-selection-title mb-4">Select services:</h3>
+    
+                <div class="services"></div>
+    
+                <div class="appointment-total">
+                    <h5 class="total-text">Total: </h5>
+    
+                    <div class="appointment-total-info">
+                        <span class="total-amount"></span>
+                        <span class="total-duration"></span>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="calendar-container">
+                <h3 class="services-selection-title mb-4">Select the appointment date:</h3>
+
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+        <div class="book-container mt-4">
+            <h2 class="book-appointment-title">7. July 2025. 15:00-15:30</h2>
+            <button class="book-btn">Book appointment</button>
+        </div>
+    </div>
+
+    <footer class="text-center">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            &copy; 2025 Copyright
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/makeAppointment.js"></script>
+</body>
+</html>

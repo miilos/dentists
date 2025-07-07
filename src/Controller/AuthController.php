@@ -3,6 +3,8 @@
 namespace Milos\Dentists\Controller;
 
 use Milos\Dentists\Core\Exception\APIException;
+use Milos\Dentists\Core\Middleware\AuthMiddleware;
+use Milos\Dentists\Core\Middleware\Middleware;
 use Milos\Dentists\Core\Request;
 use Milos\Dentists\Core\Response\JSONResponse;
 use Milos\Dentists\Core\Route;
@@ -101,6 +103,24 @@ class AuthController extends BaseController
         return $this->json([
             'status' => 'success',
             'message' => 'Login successful!'
+        ]);
+    }
+
+    #[Route(path: '/api/me', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    public function getUser(Request $req): JSONResponse
+    {
+        $user = $req->user;
+
+        if (!$user) {
+            throw new APIException('User not found!', 400);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'user' => $user
+            ]
         ]);
     }
 }

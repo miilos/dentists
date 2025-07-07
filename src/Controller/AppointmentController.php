@@ -67,4 +67,20 @@ class AppointmentController extends BaseController
             ]
         ]);
     }
+
+    #[Route(path: '/api/appointments/dentist/{id}', method: 'get')]
+    public function getAllAppointmentsForDentist(Request $req): JsonResponse
+    {
+        $id = $req->params['id'];
+
+        $model = new AppointmentModel();
+        $appointments = $model->getAllAppointmentsForDentist($id);
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'appointments' => $appointments
+            ]
+        ]);
+    }
 }

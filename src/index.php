@@ -23,6 +23,7 @@ $router->registerRoutes([
 $router->registerMiddleware([
     DentistController::class,
     AppointmentController::class,
+    AuthController::class,
 ]);
 
 $router->resolve();
