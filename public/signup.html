@@ -28,27 +28,32 @@
     </div>
 </nav>
 <div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="form-container w-50 w-lg-50 px-3">
+    <div class="border-container w-50 w-lg-50 px-3 ">
         <form method="POST" action="#">
             <div class="mb-3">
                 <label for="fist_name">First Name:</label>
                 <input type="text" class="form-control" id="fist_name" name="first_name" required>
+                <span class="text-danger small" id="error-first-name"></span>
             </div>
             <div class="mb-3">
                 <label for="last_name">Last Name:</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" required>
+                <span class="text-danger small" id="error-last-name"></span>
             </div>
             <div class="mb-3">
                 <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com" required>
+                <span class="text-danger small" id="error-email"></span>
             </div>
             <div class="mb-3">
                 <label for="phone">Phone:</label>
                 <input type="tel" class="form-control" id="phone" name="phone" required>
+                <span class="text-danger small" id="error-phone"></span>
             </div>
             <div class="mb-3">
                 <label for="password">Password:</label>
                 <input type="password" class="form-control" id="password" placeholder="must be at least 8 characters long" name="password" required>
+                <span class="text-danger small" id="error-password"></span>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn w-30 ">Sign up</button>
@@ -59,9 +64,10 @@
 </div>
 <footer class="text-center">
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-        &copy; 2025 Copyright
+        &copy; 2025 Dentists
     </div>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/checkForm.js"></script>
 </body>
 </html>
