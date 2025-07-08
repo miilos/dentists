@@ -1,8 +1,12 @@
 'use strict'
 
-const dentistId = 1
+const queryString = window.location.search
+const urlParams = new URLSearchParams(queryString)
+
+const dentistId = urlParams.get('dentist')
 let totalCost = 0
 let totalDuration = 0
+let appointmentStart, appointmentEnd
 
 let appointment = {
     dentist_id: dentistId,
@@ -11,6 +15,9 @@ let appointment = {
     total: 0,
     duration: 0
 }
+
+const modal = document.querySelector('.modal-container')
+const modalCloseBtn = document.querySelector('.modal-close-btn')
 
 const fetchAPI = async (route, method = 'GET', data = {}) => {
     let res
@@ -50,6 +57,19 @@ const formatDuration = (durationMins) => {
     }
 
     return res
+}
+
+const setAppointmentStart = (startTimeObj) => {
+    appointmentStart = startTimeObj
+}
+
+const setAppointmentEnd = (endTimeObj) => {
+    appointmentEnd = endTimeObj
+}
+
+const displayAppointmentStartAndEnd = () => {
+    document.querySelector('.book-appointment-title').innerText = 
+        `${appointmentStart.getDate()}. ${appointmentStart.getMonth()+1}. ${appointmentStart.getFullYear()}. ${appointmentStart.getHours()}:${appointmentStart.getMinutes().toString().padStart(2, '0')}-${appointmentEnd.getHours()}:${appointmentEnd.getMinutes().toString().padStart(2, '0')}`
 }
 
 const setDentistData = async () => {
@@ -94,6 +114,11 @@ const setDentistData = async () => {
             appointment.total = totalCost
             appointment.duration = totalDuration
 
+            if (appointmentStart) {
+                setAppointmentEnd(new Date(appointmentStart.getTime() + totalDuration*60*1000))
+                displayAppointmentStartAndEnd()
+            }
+
             if (cb.checked) {
                 appointment.services.push(cb.value)
             }
@@ -104,11 +129,70 @@ const setDentistData = async () => {
     })
 }
 
+const validateData = () => {
+    if (appointment.services.length === 0) {
+        return {
+            status: 'fail',
+            message: 'You need to select at least one service!'
+        }
+    }
+
+    if (appointment.services.scheduled_at === null) {
+        return {
+            status: 'fail',
+            message: 'You need to select a date and time for the appointment!'
+        }
+    }
+
+    if (appointment.services.total === 0 || appointment.services.duration === 0) {
+        return {
+            status: 'fail',
+            message: 'You need to select at least one service!'
+        }
+    }
+
+    let appointmentDate = new Date(appointment.scheduled_at)
+    appointmentDate = new Date(appointmentDate.getTime() + totalDuration*60*1000)
+
+    if (appointmentDate.getHours() >= 16) {
+        return {
+            status: 'fail',
+            message: 'Your appointment must end before 16:00!'
+        }
+    }
+
+    return {
+        status: 'success'
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async (e) => {
     await setDentistData()
 })
 
 document.querySelector('.book-btn').addEventListener('click', async (e) => {
+    const validationRes = validateData()
+
+    if (validationRes.status === 'fail') {
+        modal.style.display = 'flex'
+        modal.classList.add('modal--fail')
+        modal.querySelector('.modal-title').innerText = validationRes.message
+        return
+    }
+
     const res = await fetchAPI('/dentists/api/appointments', 'POST', appointment)
-    console.log(res)
+
+    modal.style.display = 'flex'
+    if (res.status === 'success') {
+        modal.classList.add('modal--success')
+    }
+    else if (res.status === 'fail') {
+        modal.classList.add('modal--fail')
+    }
+
+    modal.querySelector('.modal-title').innerText = res.message
+})
+
+modalCloseBtn.addEventListener('click', (e) => {
+    modal.style.display = 'none'
 })

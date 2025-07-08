@@ -1,9 +1,7 @@
 'use strict'
 
-        const dentistid = 1 // Assuming this is defined elsewhere or will be dynamic
-
         const getAppointments = async () => {
-                const res = await fetch(`/dentists/api/appointments/dentist/${dentistid}`)
+                const res = await fetch(`/dentists/api/appointments/dentist/${dentistId}`)
                 const json = await res.json()
                 return json.data.appointments
         }
@@ -109,17 +107,29 @@
 
                     // update the DOM on the page and the appointment object that's going to be sent to the API
                     // all of the other stuff related to that is in makeAppointment.js
-                    const appointmentStart = new Date(info.start.getTime())
-                    const appointmentEnd = new Date(info.end.getTime())
-
-                    document.querySelector('.book-appointment-title').innerText = 
-                        `${appointmentStart.getDate()}. ${appointmentStart.getMonth()+1}. ${appointmentStart.getFullYear()}. ${appointmentStart.getHours()}:${appointmentStart.getMinutes().toString().padStart(2, '0')}-${appointmentEnd.getHours()}:${appointmentEnd.getMinutes().toString().padStart(2, '0')}`
+                    setAppointmentStart(new Date(info.start.getTime()))
+                    setAppointmentEnd(new Date(appointmentStart.getTime() + totalDuration*60*1000))
+                    displayAppointmentStartAndEnd()
 
                     appointment.scheduled_at = `${appointmentStart.getFullYear()}.${appointmentStart.getMonth()+1}.${appointmentStart.getMonth()} ${appointmentStart.getHours()}:${appointmentStart.getMinutes().toString().padStart(2, '0')}:${appointmentStart.getSeconds()}`
                 },
                 selectAllow: function(selectInfo) {
                     const calendarEvents = calendar.getEvents()
                     const singleSlotDurationMs = parseInt(calendar.getOption('slotDuration').substring(3, 5)) * 60 * 1000;
+
+                    const now = new Date();
+                    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    const selectStartDay = new Date(selectInfo.start.getFullYear(), selectInfo.start.getMonth(), selectInfo.start.getDate());
+
+                    if (selectStartDay < todayMidnight) {
+                        // Prevent selection for entire past days
+                        return false;
+                    }
+
+                    if (selectInfo.start < now) {
+                        // Prevent selection if the start time is in the past
+                        return false;
+                    }
 
                     // 1. Check for overlapping booked appointments (type 'unavailable')
                     const overlappingBookedAppointments = calendarEvents.filter(event =>
