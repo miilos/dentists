@@ -126,4 +126,24 @@ class UserModel
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
+
+    public function banUser(int $id): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE user SET is_banned = 1 WHERE id = :id LIMIT 1";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function unbanUser(int $id): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE user SET is_banned = 0 WHERE id = :id LIMIT 1";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
 }

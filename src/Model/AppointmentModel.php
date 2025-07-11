@@ -264,4 +264,21 @@ class AppointmentModel
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
+
+    public function userMissedAppointment(int $userId): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE user SET num_missed_appointments = num_missed_appointments + 1 WHERE id = :id";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':id', $userId);
+        $stmt->execute();
+        $status = $stmt->rowCount() > 0;
+
+        $banQuery = "UPDATE user SET is_banned = 1 WHERE id = :id AND num_missed_appointments >= 3";
+        $stmt = $dbh->prepare($banQuery);
+        $stmt->bindValue(':id', $userId);
+        $stmt->execute();
+
+        return $status;
+    }
 }

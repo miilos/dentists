@@ -223,4 +223,24 @@ class AppointmentController extends BaseController
             'message' => 'Note added successfully!'
         ]);
     }
+
+    #[Route(path: '/api/missedAppointment/{userId}', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['dentist'])]
+    public function userMissedAppointment(Request $req): JsonResponse
+    {
+        $userId = $req->params['userId'];
+
+        $model = new AppointmentModel();
+        $status = $model->userMissedAppointment($userId);
+
+        if (!$status) {
+            throw new APIException("Something went wrong with marking the user for missing an appointment!", 400);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'User marked for missing an appointment successfully!'
+        ]);
+    }
 }

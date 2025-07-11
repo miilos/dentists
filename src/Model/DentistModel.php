@@ -73,4 +73,27 @@ class DentistModel
 
         return $dentist;
     }
+
+    public function editDentist(int $dentistId, array $data): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE dentist SET first_name = :first_name, last_name = :last_name, photo = :photo WHERE id = :id";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':first_name', $data['first_name']);
+        $stmt->bindValue(':last_name', $data['last_name']);
+        $stmt->bindValue(':photo', $data['photo']);
+        $stmt->bindValue(':id', $dentistId);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function deleteDentist(int $dentistId): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "DELETE FROM dentist WHERE id = :id";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':id', $dentistId);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
 }

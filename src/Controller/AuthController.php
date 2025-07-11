@@ -228,4 +228,44 @@ class AuthController extends BaseController
             'message' => 'Your profile has successfully been updated!',
         ]);
     }
+
+    #[Route(path: '/api/ban/{userId}', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['admin'])]
+    public function banUser(Request $req): JSONResponse
+    {
+        $userId = $req->params['userId'];
+
+        $model = new UserModel();
+        $status = $model->banUser($userId);
+
+        if (!$status) {
+            throw new APIException('Something went wrong while banning user!', 500);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'User banned successfully!',
+        ]);
+    }
+
+    #[Route(path: '/api/unban/{userId}', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['admin'])]
+    public function unbanUser(Request $req): JSONResponse
+    {
+        $userId = $req->params['userId'];
+
+        $model = new UserModel();
+        $status = $model->unbanUser($userId);
+
+        if (!$status) {
+            throw new APIException('Something went wrong while unbanning user!', 500);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'User unbanned successfully!',
+        ]);
+    }
 }
