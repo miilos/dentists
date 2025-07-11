@@ -1,3 +1,4 @@
+'use strict'
 document.querySelector("form").addEventListener("submit", function (e) {
     const firstName = document.getElementById("fist_name").value.trim();
     const lastName = document.getElementById("last_name").value.trim();
