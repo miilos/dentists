@@ -2,6 +2,7 @@
 
 use Milos\Dentists\Controller\AppointmentController;
 use Milos\Dentists\Controller\DentistController;
+use Milos\Dentists\Controller\ServicesController;
 use Milos\Dentists\Core\Router;
 use Milos\Dentists\Core\Request;
 use Milos\Dentists\Controller\AuthController;
@@ -17,13 +18,15 @@ $router = new Router(new Request());
 $router->registerRoutes([
     AuthController::class,
     DentistController::class,
-    AppointmentController::class
+    AppointmentController::class,
+    ServicesController::class,
 ]);
 
 $router->registerMiddleware([
     DentistController::class,
     AppointmentController::class,
     AuthController::class,
+    ServicesController::class,
 ]);
 
 $router->resolve();

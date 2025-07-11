@@ -109,7 +109,7 @@ class AppointmentController extends BaseController
         ]);
     }
 
-    #[Route(path: '/api/appointments/{code}/cancel', method: 'get')]
+    #[Route(path: '/api/appointments/{code}/cancel', method: 'delete')]
     #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
     #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['user'])]
     public function cancelAppointment(Request $req): JsonResponse
@@ -139,6 +139,88 @@ class AppointmentController extends BaseController
         return $this->json([
            'status' => 'success',
            'message' => 'Appointment cancelled successfully!'
+        ]);
+    }
+
+    #[Route(path: '/api/appointments/{id}/editTime', method: 'post')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['dentist'])]
+    public function editAppointmentTime(Request $req): JsonResponse
+    {
+        $newDate = $req->getPostBody()['newDate'];
+        $appointmentId = $req->params['id'];
+        $dentist = $req->user;
+
+        $model = new AppointmentModel();
+        $appointment = $model->getAppointmentById($appointmentId);
+
+        if (!$appointment) {
+            throw new APIException('No appointment with that id found!', 400);
+        }
+
+        if ($appointment['dentist_id'] !== $dentist['id']) {
+            throw new APIException('You can\'t edit this appointment!', 403);
+        }
+
+        $status = $model->editAppointmentTime($newDate, $appointment['id']);
+        if (!$status) {
+            throw new APIException("Something went wrong with editing your appointment time!", 400);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Appointment time edited successfully!'
+        ]);
+    }
+
+    #[Route(path: '/api/appointments/{id}/delete', method: 'delete')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['dentist'])]
+    public function deleteAppointment(Request $req): JsonResponse
+    {
+        $appointmentId = $req->params['id'];
+        $dentist = $req->user;
+
+        $model = new AppointmentModel();
+        $appointment = $model->getAppointmentById($appointmentId);
+
+        if (!$appointment) {
+            throw new APIException("No appointment found with that id!", 400);
+        }
+
+        if ($appointment['dentist_id'] !== $dentist['id']) {
+            throw new APIException('You can\'t delete this appointment!', 403);
+        }
+
+        $status = $model->cancelAppointment($appointment['id']);
+        if (!$status) {
+            throw new APIException("Something went wrong with cancelling your appointment!", 400);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Appointment cancelled successfully!'
+        ]);
+    }
+
+    #[Route(path: '/api/appointments/{id}/note', method: 'post')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['dentist'])]
+    public function addNoteToAppointment(Request $req): JsonResponse
+    {
+        $id = $req->params['id'];
+        $data = $req->getPostBody()['note'];
+
+        $model = new AppointmentModel();
+        $status = $model->addNoteToAppointment($id, $data);
+
+        if (!$status) {
+            throw new APIException("Something went wrong with creating your note!", 400);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Note added successfully!'
         ]);
     }
 }

@@ -63,6 +63,22 @@ class AppointmentModel
         return $appointmentCode;
     }
 
+    public function getAppointmentById(int $appointmentId): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT * FROM appointment WHERE id = :appointmentId";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':appointmentId', $appointmentId);
+        $stmt->execute();
+        $appointment = $stmt->fetch();
+
+        if (!$appointment) {
+            return [];
+        }
+
+        return $appointment;
+    }
+
     private function validateAppointment(string $scheduledAt, int $duration): void
     {
         // check if the appointment is at most a month ahead
@@ -225,5 +241,27 @@ class AppointmentModel
 
         $status = $stmt->rowCount();
         return $status > 0;
+    }
+
+    public function editAppointmentTime(string $newTime, int $appointmentId): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE appointment SET scheduled_at = :newTime WHERE id = :id";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':newTime', $newTime);
+        $stmt->bindValue(':id', $appointmentId);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function addNoteToAppointment(int $appointmentId, string $note): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE appointment SET note = :note WHERE id = :id";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':note', $note);
+        $stmt->bindValue(':id', $appointmentId);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
 }

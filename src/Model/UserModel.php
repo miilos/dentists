@@ -57,7 +57,18 @@ class UserModel
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$user) {
-            return [];
+            // if the user trying to log in is a dentist, get their data from the dentists table
+            $getFromDentists = "SELECT id, first_name, last_name, email, photo, role, password FROM dentist WHERE email = :email LIMIT 1";
+            $stmt = $dbh->prepare($getFromDentists);
+            $stmt->bindValue(':email', $email);
+            $stmt->execute();
+            $dentist = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if (!$dentist) {
+                return [];
+            }
+
+            return $dentist;
         }
 
         return $user;
