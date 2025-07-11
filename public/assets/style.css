@@ -110,3 +110,8 @@ footer{
 .modal--fail {
     background-color: #c74933;
 }
+
+.err {
+    visibility: hidden;
+    color: #c74933
+}

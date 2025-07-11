@@ -166,8 +166,15 @@ const validateData = () => {
     }
 }
 
+const getUser = async () => {
+    return (await fetchAPI('/dentists/api/me')).data.user
+}
+
 document.addEventListener('DOMContentLoaded', async (e) => {
     await setDentistData()
+
+    const user = await getUser()
+    document.querySelector('.user-header').innerHTML = `You're making an appointment as: <b> ${user.first_name} ${user.last_name}</b>, with: `
 })
 
 document.querySelector('.book-btn').addEventListener('click', async (e) => {

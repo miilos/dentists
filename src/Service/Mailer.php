@@ -20,25 +20,26 @@ class Mailer
         $this->mailer->Port = 587;
     }
 
-    public function send(string $recipientAddress, string $recipientName, string $subject, string $html, string $altBody): void
+    public function send(string $recipientAddress, string $recipientName, string $subject, string $title, string $html, string $altBody): void
     {
         $this->mailer->setFrom($_ENV['EMAIL_FROM_ADDRESS'], $_ENV['EMAIL_FROM_NAME']);
         $this->mailer->addAddress($recipientAddress, $recipientName);
 
         $this->mailer->isHTML(true);
         $this->mailer->Subject = $subject;
-        $this->mailer->Body = $this->buildTemplate($html);
+        $this->mailer->Body = $this->buildTemplate($title, $html);
         $this->mailer->AltBody = $altBody;
 
         $this->mailer->send();
     }
 
-    private function buildTemplate(string $html): string
+    private function buildTemplate(string $title, string $html): string
     {
         ob_start();
         include ROOT_PATH . '/src/View/template/email_template.php';
         $template = ob_get_clean();
 
+        $template = str_replace('{{ TITLE }}', $title, $template);
         return str_replace('{{ CONTENT }}', $html, $template);
     }
 }

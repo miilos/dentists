@@ -40,6 +40,7 @@ class AuthController extends BaseController
             $data['email'],
             $data['first_name'],
             'Welcome to dentists!',
+            'Signup successful!',
             "
                 <h4>Thank you for registering with us!</h4>
         
@@ -121,6 +122,79 @@ class AuthController extends BaseController
             'data' => [
                 'user' => $user
             ]
+        ]);
+    }
+
+    #[Route(path: '/api/forgotPassword', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    public function forgotPassword(Request $req): JSONResponse
+    {
+        $resetToken = TokenGenerator::generate(16);
+
+        $model = new UserModel();
+        $status = $model->setPasswordResetToken($resetToken, $req->user['id']);
+
+        if (!$status) {
+            throw new APIException('Something went wrong while getting you your password reset token!', 500);
+        }
+
+        $mailer = new Mailer();
+        $mailer->send(
+            $req->user['email'],
+            $req->user['first_name'],
+            'Your password reset token (expires in 5 minutes)',
+            'Your password reset token',
+            "
+                <p>Your password reset token is: </p>
+                
+                <br>
+                <h1>{$resetToken}</h1>
+                <br>
+                
+                <p>This token is only valid for 5 minutes.</p>
+        
+                <p>Sincerely, <br>the dentists team</p>
+            ",
+            'Password reset token sent to your email! It\'s only valid for 5 minutes.'
+        );
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Your password reset token has been sent to your email.',
+            'data' => [
+                'resetToken' => $resetToken
+            ]
+        ]);
+    }
+
+    #[Route(path: '/api/resetPassword', method: 'post')]
+    public function resetPassword(Request $req): JSONResponse
+    {
+        $data = $req->getPostBody();
+
+        if (!$data['reset_token'] || !$data['password']) {
+            throw new APIException('Email or password reset token not specified!', 400);
+        }
+
+        if (strlen($data['password']) < 8) {
+            throw new APIException('Password must be at least 8 characters!', 400);
+        }
+
+        $model = new UserModel();
+        $user = $model->getUserByResetToken($data['reset_token']);
+
+        if (!$user) {
+            throw new APIException('Invalid or expired reset token!', 400);
+        }
+
+        $status = $model->resetPassword($user, $data['password']);
+        if (!$status) {
+            throw new APIException('Something went wrong while resetting your password!', 500);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Your password has been reset!',
         ]);
     }
 }

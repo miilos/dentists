@@ -17,7 +17,6 @@
             return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
         }
 
-
         document.addEventListener('DOMContentLoaded', async function() {
             const calendarEl = document.getElementById('calendar');
 
@@ -111,7 +110,7 @@
                     setAppointmentEnd(new Date(appointmentStart.getTime() + totalDuration*60*1000))
                     displayAppointmentStartAndEnd()
 
-                    appointment.scheduled_at = `${appointmentStart.getFullYear()}.${appointmentStart.getMonth()+1}.${appointmentStart.getMonth()} ${appointmentStart.getHours()}:${appointmentStart.getMinutes().toString().padStart(2, '0')}:${appointmentStart.getSeconds()}`
+                    appointment.scheduled_at = `${appointmentStart.getFullYear()}-${(appointmentStart.getMonth()+1)}-${appointmentStart.getDate()} ${appointmentStart.getHours()}:${appointmentStart.getMinutes().toString().padStart(2, '0')}:${appointmentStart.getSeconds()}`
                 },
                 selectAllow: function(selectInfo) {
                     const calendarEvents = calendar.getEvents()
@@ -120,6 +119,7 @@
                     const now = new Date();
                     const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                     const selectStartDay = new Date(selectInfo.start.getFullYear(), selectInfo.start.getMonth(), selectInfo.start.getDate());
+                    const monthFromNow = new Date(now.getFullYear(), now.getMonth()+1, now.getDate())
 
                     if (selectStartDay < todayMidnight) {
                         // Prevent selection for entire past days
@@ -129,6 +129,10 @@
                     if (selectInfo.start < now) {
                         // Prevent selection if the start time is in the past
                         return false;
+                    }
+
+                    if (selectInfo.start > monthFromNow) {
+                        return false
                     }
 
                     // 1. Check for overlapping booked appointments (type 'unavailable')

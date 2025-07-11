@@ -8,6 +8,7 @@ use Milos\Dentists\Core\Request;
 use Milos\Dentists\Core\Response\JSONResponse;
 use Milos\Dentists\Core\Route;
 use Milos\Dentists\Model\AppointmentModel;
+use Milos\Dentists\Service\Mailer;
 
 class AppointmentController extends BaseController
 {
@@ -22,6 +23,29 @@ class AppointmentController extends BaseController
 
         $model = new AppointmentModel();
         $appointmentCode = $model->createAppointment($data);
+
+        $mailer = new Mailer();
+        $mailer->send(
+            $req->user['email'],
+            $req->user['first_name'],
+            "Appointment booked!",
+            "Your appointment was successfully booked!",
+            "
+                <p>
+                    Your appointment on {$data['scheduled_at']} was successfully booked. Your appointment code is:
+                    <br>
+                    <h1>{$appointmentCode}</h1>
+                </p>
+        
+                <p>Sincerely, <br>the dentists team</p>
+            ",
+            "
+                    Your appointment on {$data['scheduled_at']} was successfully booked. Your appointment code is:
+                    {$appointmentCode}
+        
+                    Sincerely, the dentists team
+            "
+        );
 
         return $this->json([
             'status' => 'success',

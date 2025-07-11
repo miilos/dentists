@@ -3,6 +3,7 @@
 namespace Milos\Dentists\Model;
 
 use Milos\Dentists\Core\Db;
+use Milos\Dentists\Core\Exception\APIException;
 
 class UserModel
 {
@@ -60,5 +61,45 @@ class UserModel
         }
 
         return $user;
+    }
+
+    public function setPasswordResetToken(string $resetToken, int $id): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE user SET password_reset_token = :reset_token, password_reset_token_expires_at = NOW() + INTERVAL 5 MINUTE WHERE id = :id LIMIT 1";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':reset_token', $resetToken);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function getUserByResetToken(string $resetToken): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT * FROM user WHERE password_reset_token = :reset_token AND password_reset_token_expires_at > NOW() LIMIT 1";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':reset_token', $resetToken);
+        $stmt->execute();
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            return [];
+        }
+
+        return $user;
+    }
+
+    public function resetPassword(array $user, string $password): bool
+    {
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+
+        $dbh = Db::getConnection();
+        $query = "UPDATE user SET password = :password, password_reset_token = NULL, password_reset_token_expires_at = NULL WHERE id = :id LIMIT 1";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':password', $hash);
+        $stmt->bindValue(':id', $user['id']);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
 }

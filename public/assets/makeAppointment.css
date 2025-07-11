@@ -128,3 +128,15 @@ p {
     background-color: rgba(163, 197, 241, 0.7) !important;
     cursor: not-allowed;
 }
+
+@media screen and (max-width: 768px) {
+    .appointment-data {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .services-selection {
+        width: 100%;
+    }
+}
