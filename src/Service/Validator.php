@@ -6,7 +6,7 @@ use Milos\Dentists\Model\UserModel;
 
 class Validator
 {
-    public static function validateUser($data): array
+    public static function validateUser(array $data): array
     {
         $errors = [];
 
@@ -45,6 +45,25 @@ class Validator
 
         if ($data['password'] !== $data['password_confirm']) {
             $errors['password_confirm'][] = 'This field has to match password';
+        }
+
+        return $errors;
+    }
+
+    public static function validateUserEditData(array $data): array
+    {
+        $errors = [];
+
+        if (!$data['first_name']) {
+            $errors['first_name'][] = 'First name is required';
+        }
+
+        if (!$data['last_name']) {
+            $errors['last_name'][] = 'Last name is required';
+        }
+
+        if (!$data['phone']) {
+            $errors['phone'][] = 'Phone number is required';
         }
 
         return $errors;

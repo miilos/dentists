@@ -187,4 +187,43 @@ class AppointmentModel
 
         return $appointments;
     }
+
+    public function getAppointmentByCode(int $userId, string $appointmentCode): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT ac.code, a.id, a.scheduled_at FROM appointment_codes ac INNER JOIN appointment a ON ac.appointment_id = a.id WHERE ac.code = :code AND ac.user_id = :id";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':code', $appointmentCode);
+        $stmt->bindValue(':id', $userId);
+        $stmt->execute();
+        $appointment = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$appointment) {
+            return [];
+        }
+
+        return $appointment;
+    }
+
+    public function cancelAppointment(int $appointmentId): bool
+    {
+        $dbh = Db::getConnection();
+        $deleteCodeQuery = "DELETE FROM appointment_codes WHERE appointment_id = :id";
+        $stmt = $dbh->prepare($deleteCodeQuery);
+        $stmt->bindValue(':id', $appointmentId);
+        $stmt->execute();
+
+        $deleteServicesQuery = "DELETE FROM appointment_service WHERE appointment_id = :id";
+        $stmt = $dbh->prepare($deleteServicesQuery);
+        $stmt->bindValue(':id', $appointmentId);
+        $stmt->execute();
+
+        $deleteAppointmentQuery = "DELETE FROM appointment WHERE id = :id";
+        $stmt = $dbh->prepare($deleteAppointmentQuery);
+        $stmt->bindValue(':id', $appointmentId);
+        $stmt->execute();
+
+        $status = $stmt->rowCount();
+        return $status > 0;
+    }
 }

@@ -102,4 +102,17 @@ class UserModel
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
+
+    public function editProfile(array $data, int $userId): bool
+    {
+        $dbh = Db::getConnection();
+        $query = "UPDATE user SET first_name = :fist_name, last_name = :last_name, phone = :phone WHERE id = :id LIMIT 1";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':fist_name', $data['first_name']);
+        $stmt->bindValue(':last_name', $data['last_name']);
+        $stmt->bindValue(':phone', $data['phone']);
+        $stmt->bindValue(':id', $userId);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
 }

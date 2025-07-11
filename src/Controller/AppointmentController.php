@@ -2,6 +2,7 @@
 
 namespace Milos\Dentists\Controller;
 
+use Milos\Dentists\Core\Exception\APIException;
 use Milos\Dentists\Core\Middleware\AuthMiddleware;
 use Milos\Dentists\Core\Middleware\Middleware;
 use Milos\Dentists\Core\Request;
@@ -105,6 +106,39 @@ class AppointmentController extends BaseController
             'data' => [
                 'appointments' => $appointments
             ]
+        ]);
+    }
+
+    #[Route(path: '/api/appointments/{code}/cancel', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['user'])]
+    public function cancelAppointment(Request $req): JsonResponse
+    {
+        $code = $req->params['code'];
+
+        $model = new AppointmentModel();
+        $appointment = $model->getAppointmentByCode($req->user['id'], $code);
+
+        if (!$appointment) {
+            throw new APIException("No appointment found for code '{$code}'!", 400);
+        }
+
+        $now = new \DateTimeImmutable();
+        $fourHoursFromNow = $now->add(new \DateInterval('PT4H'));
+        $appointmentScheduledAt = new \DateTime($appointment['scheduled_at']);
+
+        if ($fourHoursFromNow > $appointmentScheduledAt) {
+            throw new APIException('You can\'t cancel your appointment less than 4 hours before it starts!', 400);
+        }
+
+        $status = $model->cancelAppointment($appointment['id']);
+        if (!$status) {
+            throw new APIException("Something went wrong with cancelling your appointment!", 400);
+        }
+
+        return $this->json([
+           'status' => 'success',
+           'message' => 'Appointment cancelled successfully!'
         ]);
     }
 }

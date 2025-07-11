@@ -197,4 +197,35 @@ class AuthController extends BaseController
             'message' => 'Your password has been reset!',
         ]);
     }
+
+    #[Route(path: '/api/editProfile', method: 'post')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    public function editProfile(Request $req): JSONResponse
+    {
+        $data = $req->getPostBody();
+        $user = $req->user;
+
+        $updateData = [
+            'first_name' => $data['first_name'] ?? $user['first_name'],
+            'last_name' => $data['last_name'] ?? $user['last_name'],
+            'phone' => $data['phone'] ?? $user['phone']
+        ];
+
+        $errors = Validator::validateUserEditData($updateData);
+        if ($errors) {
+            throw new APIException('Validation error', 400, $errors);
+        }
+
+        $model = new UserModel();
+        $status = $model->editProfile($updateData, $user['id']);
+
+        if (!$status) {
+            throw new APIException('Something went wrong while updating your profile!', 500);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Your profile has successfully been updated!',
+        ]);
+    }
 }
