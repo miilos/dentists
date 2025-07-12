@@ -2,8 +2,10 @@
 
 namespace Milos\Dentists\Model;
 
+use DateTime;
 use Milos\Dentists\Core\Db;
 use Milos\Dentists\Core\Exception\APIException;
+use PDO;
 
 class AppointmentModel
 {
@@ -82,9 +84,9 @@ class AppointmentModel
     private function validateAppointment(string $scheduledAt, int $duration, int $dentistId): void
     {
         // check if the appointment is at most a month ahead
-        $scheduledAtDate = new \DateTime($scheduledAt);
-        $now = new \DateTime();
-        $monthAhead = (new \DateTime())->modify('+1 month');
+        $scheduledAtDate = new DateTime($scheduledAt);
+        $now = new DateTime();
+        $monthAhead = (new DateTime())->modify('+1 month');
 
         if (!($scheduledAtDate >= $now && $scheduledAtDate <= $monthAhead)) {
             throw new APIException('You can schedule an appointment at most a month ahead!', 400);
@@ -120,27 +122,26 @@ class AppointmentModel
     public function getActiveAppointmentsForUser(int $userId): array
     {
         $dbh = Db::getConnection();
-        $query = "SELECT a.id, a.user_id, a.dentist_id, a.scheduled_at, a.price, a.duration, ac.code, d.id, d.first_name, d.last_name, d.email, d.photo
-                    FROM appointment a INNER JOIN appointment_codes ac
-                    ON a.id = ac.appointment_id
-                    INNER JOIN dentist d
-                    ON a.dentist_id = d.id
-                    WHERE a.user_id = :userId AND a.scheduled_at > NOW()";
+        $query = "SELECT a.id AS appointment_id,a.user_id, a.dentist_id, a.scheduled_at, a.price, a.duration, ac.code, d.id AS dentist_id, d.first_name, d.last_name, d.email, d.photo
+    FROM appointment a
+    INNER JOIN appointment_codes ac ON a.id = ac.appointment_id
+    INNER JOIN dentist d ON a.dentist_id = d.id
+    WHERE a.user_id = :userId AND a.scheduled_at > NOW()";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':userId', $userId);
         $stmt->execute();
-        $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $activeAppointments = [];
         foreach ($res as $appointment) {
             $servicesQuery = "SELECT * FROM appointment_service app_sr INNER JOIN service s ON app_sr.service_id = s.id WHERE app_sr.appointment_id = :appointmentId";
             $servicesStmt = $dbh->prepare($servicesQuery);
-            $servicesStmt->bindValue(':appointmentId', $appointment['id']);
+            $servicesStmt->bindValue(':appointmentId', $appointment['appointment_id']);
             $servicesStmt->execute();
-            $services = $servicesStmt->fetchAll(\PDO::FETCH_ASSOC);
+            $services = $servicesStmt->fetchAll(PDO::FETCH_ASSOC);
 
             $activeAppointments[] = [
-                'id' => $appointment['id'],
+                'id' => $appointment['appointment_id'],
                 'user_id' => $appointment['user_id'],
                 'scheduled_at' => $appointment['scheduled_at'],
                 'price' => $appointment['price'],
@@ -155,6 +156,7 @@ class AppointmentModel
                 ],
                 'services' => $services
             ];
+
         }
 
         return $activeAppointments;
@@ -172,7 +174,7 @@ class AppointmentModel
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':userId', $userId);
         $stmt->execute();
-        $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $appointments = [];
         foreach ($res as $appointment) {
@@ -180,7 +182,7 @@ class AppointmentModel
             $servicesStmt = $dbh->prepare($servicesQuery);
             $servicesStmt->bindValue(':appointmentId', $appointment['id']);
             $servicesStmt->execute();
-            $services = $servicesStmt->fetchAll(\PDO::FETCH_ASSOC);
+            $services = $servicesStmt->fetchAll(PDO::FETCH_ASSOC);
 
             $appointments[] = [
                 'id' => $appointment['id'],
@@ -210,7 +212,7 @@ class AppointmentModel
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
-        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $appointments = [];
         foreach ($data as $appointment) {
@@ -244,7 +246,7 @@ class AppointmentModel
         $stmt->bindValue(':code', $appointmentCode);
         $stmt->bindValue(':id', $userId);
         $stmt->execute();
-        $appointment = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$appointment) {
             return [];

@@ -19,6 +19,7 @@ async function fetchActiveAppointments() {
     try {
         const response = await fetch('/dentists/api/appointments/active');
         const result = await response.json();
+        console.log('Appointments fetched:', result.data.appointments);
         renderAppointments(result.data.appointments);
     } catch (error) {
         console.error('Failed to fetch appointments', error);
@@ -31,38 +32,41 @@ function renderAppointments(appointments) {
     const tbody = document.querySelector('#appointmentsTable tbody');
     tbody.innerHTML = '';
 
-    // Show message if no appointments
+    // If no appointments, show a message
     if (appointments.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" class="text-center">No active appointments found.</td></tr>`;
         return;
     }
 
-    // Create a table row for each appointment
     appointments.forEach(appointment => {
         const scheduledTime = new Date(appointment.scheduled_at);
+
+        // Can cancel if more than 4 hours ahead
         const canCancel = (scheduledTime - new Date()) > 4 * 60 * 60 * 1000;
 
-        // Compose a comma-separated string of service names
-        let serviceNames = 'N/A';
-        if (Array.isArray(appointment.services) && appointment.services.length > 0) {
-            serviceNames = appointment.services.map(s => s.name).join(', ');
-        }
+        // Get service names joined by comma
+        const servicesList = appointment.services && appointment.services.length > 0
+            ? appointment.services.map(s => s.name).join(', ')
+            : 'N/A';
+
+        // Get service IDs for edit button data attribute
+        const serviceIds = appointment.services ? appointment.services.map(s => s.id) : [];
 
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${scheduledTime.toLocaleString()}</td>
             <td>${appointment.duration}</td>
-            <td>${serviceNames}</td>
+            <td>${servicesList}</td>
             <td>${appointment.notes || 'N/A'}</td>
             <td>
-                <button class="btn btn-info edit-btn"
+                <button class="btn edit-btn"
                     data-id="${appointment.id}"
-                    data-service-ids='${JSON.stringify(appointment.services.map(s => s.id))}'
+                    data-service-ids='${JSON.stringify(serviceIds)}'
                     data-notes="${appointment.notes || ''}"
                     data-datetime="${appointment.scheduled_at}">
                     Edit
                 </button>
-                <button class="btn btn-danger cancel-btn"
+                <button class="btn cancel-btn"
                     data-code="${appointment.code}"
                     ${canCancel ? '' : 'disabled'}>
                     ${canCancel ? 'Cancel' : 'Cannot Cancel (<4h)'}
