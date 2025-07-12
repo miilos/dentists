@@ -80,7 +80,7 @@ footer{
     transform: translate(-50%, -50%);
     color: #fff;
     z-index: 10;
-    
+
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -122,4 +122,16 @@ footer{
 
 .fc-event-title button {
     margin-left: 8px;
+}
+#editFormContainer {
+    display: none;
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-width: 600px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-left: auto;
+    margin-right: auto;
 }

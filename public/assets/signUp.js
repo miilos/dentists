@@ -1,5 +1,8 @@
 'use strict'
-document.querySelector("form").addEventListener("submit", function (e) {
+
+document.querySelector("form").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Always prevent default to handle submission ourselves
+
     const firstName = document.getElementById("fist_name").value.trim();
     const lastName = document.getElementById("last_name").value.trim();
     const email = document.getElementById("email").value.trim();
@@ -14,6 +17,7 @@ document.querySelector("form").addEventListener("submit", function (e) {
         password: document.getElementById("error-password")
     };
 
+    // Clear previous errors
     for (let key in errors) {
         errors[key].textContent = "";
     }
@@ -24,6 +28,7 @@ document.querySelector("form").addEventListener("submit", function (e) {
 
     let hasError = false;
 
+    // Client-side validation
     if (!nameRegex.test(firstName)) {
         errors.firstName.textContent = "Only letters allowed in First Name.";
         hasError = true;
@@ -49,7 +54,40 @@ document.querySelector("form").addEventListener("submit", function (e) {
         hasError = true;
     }
 
+    // If validation fails, stop here
     if (hasError) {
-        e.preventDefault();
+        return;
+    }
+
+    // If validation passes, submit to API
+    try {
+        const res = await fetch('/dentists/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                first_name: firstName,
+                last_name: lastName,
+                email,
+                phone,
+                password
+            })
+        });
+
+        const json = await res.json();
+
+        if (json.status === 'success') {
+            showModalSuccess('Registration successful! Please sign in.');
+            setTimeout(() => {
+                window.location = 'public/signin.html';
+            }, 1500);
+        }
+        else {
+            showModalFail(json.message || 'Registration failed. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error during registration:', error);
+        showModalFail('An error occurred. Please try again.');
     }
 });
