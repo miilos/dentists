@@ -133,6 +133,12 @@ class AppointmentModel
 
         $activeAppointments = [];
         foreach ($res as $appointment) {
+            $servicesQuery = "SELECT * FROM appointment_service app_sr INNER JOIN service s ON app_sr.service_id = s.id WHERE app_sr.appointment_id = :appointmentId";
+            $servicesStmt = $dbh->prepare($servicesQuery);
+            $servicesStmt->bindValue(':appointmentId', $appointment['id']);
+            $servicesStmt->execute();
+            $services = $servicesStmt->fetchAll(\PDO::FETCH_ASSOC);
+
             $activeAppointments[] = [
                 'id' => $appointment['id'],
                 'user_id' => $appointment['user_id'],
@@ -146,7 +152,8 @@ class AppointmentModel
                     'last_name' => $appointment['last_name'],
                     'email' => $appointment['email'],
                     'photo' => $appointment['photo']
-                ]
+                ],
+                'services' => $services
             ];
         }
 
