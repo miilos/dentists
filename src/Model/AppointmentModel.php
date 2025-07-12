@@ -288,6 +288,25 @@ class AppointmentModel
         return $stmt->rowCount() > 0;
     }
 
+    public function editAppointmentServices(array $data, int $appointmentId): bool
+    {
+        $dbh = Db::getConnection();
+        $deleteExistingServicesQuery = "DELETE FROM appointment_service WHERE appointment_id = :id";
+        $stmt = $dbh->prepare($deleteExistingServicesQuery);
+        $stmt->bindValue(':id', $appointmentId);
+        $stmt->execute();
+
+        foreach ($data as $serviceId) {
+            $addNewServicesQuery = "INSERT INTO appointment_service (appointment_id, service_id) VALUES (:appointmentId, :serviceId)";
+            $stmt = $dbh->prepare($addNewServicesQuery);
+            $stmt->bindValue(':appointmentId', $appointmentId);
+            $stmt->bindValue(':serviceId', $serviceId);
+            $stmt->execute();
+        }
+
+        return true;
+    }
+
     public function addNoteToAppointment(int $appointmentId, string $note): bool
     {
         $dbh = Db::getConnection();

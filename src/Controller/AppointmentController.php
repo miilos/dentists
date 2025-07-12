@@ -173,6 +173,21 @@ class AppointmentController extends BaseController
         ]);
     }
 
+    #[Route(path: '/api/appointments/{id}/services', method: 'post')]
+    public function editAppointmentServices(Request $req): JsonResponse
+    {
+        $data = $req->getPostBody();
+        $id = $req->params['id'];
+
+        $model = new AppointmentModel();
+        $model->editAppointmentServices($data['service_ids'], $id);
+
+        return $this->json([
+           'status' => 'success',
+           'message' => 'Appointment services edited successfully!'
+        ]);
+    }
+
     #[Route(path: '/api/appointments/{id}/delete', method: 'delete')]
     #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
     #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['dentist'])]

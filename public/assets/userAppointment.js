@@ -3,9 +3,9 @@
 let allServices = [];
 
 // --- Fetch all available services from the API ---
-async function fetchServices() {
+async function fetchServices(dentistId) {
     try {
-        const response = await fetch('/dentists/api/services');
+        const response = await fetch(`/dentists/api/dentists/${dentistId}/services`);
         const result = await response.json();
         allServices = result.data.services;
     } catch (error) {
@@ -60,6 +60,7 @@ function renderAppointments(appointments) {
             <td>${appointment.notes || 'N/A'}</td>
             <td>
                 <button class="btn edit-btn"
+                    data-dentist-id="${appointment.dentist.id}"
                     data-id="${appointment.id}"
                     data-service-ids='${JSON.stringify(serviceIds)}'
                     data-notes="${appointment.notes || ''}"
@@ -86,13 +87,14 @@ function renderAppointments(appointments) {
 }
 
 // --- Open the edit form and populate it with appointment data ---
-function openEditForm(e) {
+async function openEditForm(e) {
     const button = e.target;
 
     const appointmentId = button.getAttribute('data-id');
     const serviceIds = JSON.parse(button.getAttribute('data-service-ids'));
     const notes = button.getAttribute('data-notes');
     const datetime = button.getAttribute('data-datetime');
+    const dentistId = button.getAttribute('data-dentist-id')
 
     // Set appointment data in the form fields
     document.getElementById('editAppointmentId').value = appointmentId;
@@ -100,16 +102,18 @@ function openEditForm(e) {
     document.getElementById('editNotes').value = notes;
 
     // Populate services checkboxes with selected services checked
-    populateServiceOptions(serviceIds);
+    await populateServiceOptions(serviceIds, dentistId);
 
     // Show the edit form container
     document.getElementById('editFormContainer').style.display = 'flex';
 }
 
 // --- Populate the services as checkboxes in the edit form ---
-function populateServiceOptions(selectedIds) {
+async function populateServiceOptions(selectedIds, dentistId) {
     const container = document.getElementById('serviceSelection');
     container.innerHTML = '';
+
+    await fetchServices(dentistId)
 
     if (allServices.length === 0) {
         container.innerHTML = '<p>No services available.</p>';
@@ -211,7 +215,6 @@ async function cancelAppointment(e) {
 
 // --- Initialize the page ---
 document.addEventListener('DOMContentLoaded', async () => {
-    await fetchServices();
     await fetchActiveAppointments();
 
     // Hide the edit form initially
