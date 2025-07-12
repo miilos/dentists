@@ -1,6 +1,7 @@
+'use strict'
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch logged-in user data
-    fetch('/dentists/api/me')
+    fetch('dentists/api/me')
         .then(res => {
             if (!res.ok) throw new Error('Failed to fetch user data');
             return res.json();
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('phone').value = user.phone || '';
 
             // Fetch user's appointment records
-            return fetch('/api/appointments');
+            return fetch('/dentists/api/appointments');
         })
         .then(res => {
             if (!res.ok) throw new Error('Failed to fetch appointments');
@@ -39,12 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const date = new Date(app.scheduled_at || app.date).toLocaleDateString();
                 const dentistName = app.dentist_name || 'Unknown dentist';
                 const service = app.service || 'Unknown service';
-
+                const note = app.note || 'Unknown';
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${date}</td>
                     <td>${dentistName}</td>
                     <td>${service}</td>
+                    <td>${note}</td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -104,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Send update request
-        fetch('/dentists/api/editProfile', {
+        fetch('dentists/api/editProfile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

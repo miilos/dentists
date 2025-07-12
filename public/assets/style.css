@@ -115,3 +115,11 @@ footer{
     visibility: hidden;
     color: #c74933
 }
+#calendar {
+    max-width: 60%;
+    margin: 30px auto;
+}
+
+.fc-event-title button {
+    margin-left: 8px;
+}

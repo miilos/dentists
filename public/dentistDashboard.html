@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dentist Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/main.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.11/main.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.11/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <span class="navbar-brand">Dentist Dashboard</span>
+        <div class="collapse navbar-collapse">
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+<h2 class="text-center mb-4">Appointments Scheduled With You</h2>
+<table class="table table-bordered table-dark">
+    <thead>
+    <tr>
+        <th>Patient</th>
+        <th>Date & Time</th>
+        <th>Duration</th>
+        <th>Note</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="appointmentsTable"></tbody>
+</table>
+</div>
+<hr class="my-5">
+<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="noteForm">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noteModalLabel">Add/Edit Treatment Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" id="noteText" placeholder="Enter treatment note..." rows="4" required></textarea>
+                <input type="hidden" id="noteAppointmentId" />
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<h3 class="text-center">Your Availability Calendar</h3>
+<div id="calendar"></div>
+<footer class="text-center mt-5 p-3">
+    &copy; 2025 Dentists
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.11/index.global.min.js"></script>
+<script src="assets/dentistAppointment.js"></script>
+<script src="assets/dentistCalendar.js"></script>
+</body>
+</html>
