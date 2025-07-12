@@ -206,9 +206,9 @@ class AuthController extends BaseController
         $user = $req->user;
 
         $updateData = [
-            'first_name' => $data['first_name'] ?? $user['first_name'],
-            'last_name' => $data['last_name'] ?? $user['last_name'],
-            'phone' => $data['phone'] ?? $user['phone']
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'phone' => $data['phone']
         ];
 
         $errors = Validator::validateUserEditData($updateData);
@@ -222,6 +222,9 @@ class AuthController extends BaseController
         if (!$status) {
             throw new APIException('Something went wrong while updating your profile!', 500);
         }
+
+        $updatedUser = $model->getUserByEmail($user['email']);
+        SessionManager::set('user', $updatedUser);
 
         return $this->json([
             'status' => 'success',

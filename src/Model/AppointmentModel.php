@@ -10,7 +10,7 @@ class AppointmentModel
     // inserts all the appointment related data and returns the appointment code
     public function createAppointment(array $data): string
     {
-        $this->validateAppointment($data['scheduled_at'], $data['duration']);
+        $this->validateAppointment($data['scheduled_at'], $data['duration'], $data['dentist_id']);
 
         // create the main appointment record in the db
         $dbh = Db::getConnection();
@@ -79,7 +79,7 @@ class AppointmentModel
         return $appointment;
     }
 
-    private function validateAppointment(string $scheduledAt, int $duration): void
+    private function validateAppointment(string $scheduledAt, int $duration, int $dentistId): void
     {
         // check if the appointment is at most a month ahead
         $scheduledAtDate = new \DateTime($scheduledAt);
@@ -91,21 +91,22 @@ class AppointmentModel
         }
 
         // check if the appointment overlaps with other appointments
-        $overlappingAppointments = $this->getOverlappingAppointments($scheduledAt, $duration);
+        $overlappingAppointments = $this->getOverlappingAppointments($scheduledAt, $duration, $dentistId);
         if ($overlappingAppointments) {
             throw new APIException('There is already an appointment made at this time!', 400);
         }
     }
 
-    private function getOverlappingAppointments(string $startTime, int $duration): array
+    private function getOverlappingAppointments(string $startTime, int $duration, int $dentistId): array
     {
         $endTime = date('Y-m-d H:i:s', strtotime($startTime . " + $duration minutes"));
 
         $dbh = Db::getConnection();
-        $query = "SELECT * FROM appointment WHERE scheduled_at < :endTime AND DATE_ADD(scheduled_at, INTERVAL duration MINUTE) > :startTime";
+        $query = "SELECT * FROM appointment WHERE scheduled_at < :endTime AND DATE_ADD(scheduled_at, INTERVAL duration MINUTE) > :startTime AND dentist_id = :dentistId";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':startTime', $startTime);
         $stmt->bindValue(':endTime', $endTime);
+        $stmt->bindValue(':dentistId', $dentistId);
         $stmt->execute();
         $overlappingAppointments = $stmt->fetchAll();
 
@@ -168,7 +169,7 @@ class AppointmentModel
 
         $appointments = [];
         foreach ($res as $appointment) {
-            $servicesQuery = "SELECT * FROM appointment_service app_sr INNER JOIN service s ON     app_sr.service_id = s.id WHERE app_sr.appointment_id = :appointmentId";
+            $servicesQuery = "SELECT * FROM appointment_service app_sr INNER JOIN service s ON app_sr.service_id = s.id WHERE app_sr.appointment_id = :appointmentId";
             $servicesStmt = $dbh->prepare($servicesQuery);
             $servicesStmt->bindValue(':appointmentId', $appointment['id']);
             $servicesStmt->execute();
@@ -198,11 +199,28 @@ class AppointmentModel
     public function getAllAppointmentsForDentist(int $id): array
     {
         $dbh = Db::getConnection();
-        $query = "SELECT * FROM appointment WHERE dentist_id = :id";
+        $query = "SELECT * FROM appointment a INNER JOIN user u ON a.user_id = u.id WHERE dentist_id = :id";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
-        $appointments = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $appointments = [];
+        foreach ($data as $appointment) {
+            $appointments[] = [
+                'id' => $appointment['id'],
+                'dentist_id' => $appointment['dentist_id'],
+                'scheduled_at' => $appointment['scheduled_at'],
+                'price' => $appointment['price'],
+                'duration' => $appointment['duration'],
+                'note' => $appointment['note'],
+                'user' => [
+                    'id' => $appointment['user_id'],
+                    'first_name' => $appointment['first_name'],
+                    'last_name' => $appointment['last_name']
+                ]
+            ];
+        }
 
         if (!$appointments) {
             return [];

@@ -117,7 +117,7 @@ class UserModel
     public function editProfile(array $data, int $userId): bool
     {
         $dbh = Db::getConnection();
-        $query = "UPDATE user SET first_name = :fist_name, last_name = :last_name, phone = :phone WHERE id = :id LIMIT 1";
+        $query = "UPDATE user SET first_name = :fist_name, last_name = :last_name, phone = :phone WHERE id = :id";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':fist_name', $data['first_name']);
         $stmt->bindValue(':last_name', $data['last_name']);
