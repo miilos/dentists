@@ -6,7 +6,7 @@ const officeHoursForm = document.getElementById("officeHoursForm");
 const officeHoursList = document.getElementById("officeHoursList");
 
 function loadAppointments() {
-    fetch(`dentists/api/appointments/dentist/${dentistId}`, {
+    fetch(`/dentists/api/appointments/dentist/${dentistId}`, {
         headers: { Authorization: `Bearer ${authToken}` }
     })
         .then(res => res.json())

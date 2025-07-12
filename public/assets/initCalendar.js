@@ -18,7 +18,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
-            const calendarEl = document.getElementById('calendar');
+            const calendarEl = document.getElementById('appointment_calendar');
 
             let calendar
             let currentSelectedSlot = null
@@ -62,7 +62,7 @@
                 },
                 events: async function(fetchInfo, successCallback, failureCallback) {
                     const appointments = await getAppointments()
-
+                    
                     const calendarEventAppointments = appointments.map(curr => {
                         // the calendar prefers getting ISO strings for time
                         const startTimeISOString = curr.scheduled_at.replace(' ', 'T')

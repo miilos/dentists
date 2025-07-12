@@ -1,14 +1,14 @@
 'use strict'
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch logged-in user data
-    fetch('dentists/api/me')
+    fetch('/dentists/api/me')
         .then(res => {
             if (!res.ok) throw new Error('Failed to fetch user data');
             return res.json();
         })
         .then(data => {
             const user = data.data.user;
-
+            
             // Populate input fields with user data
             document.getElementById('first_name').value = user.first_name || '';
             document.getElementById('last_name').value = user.last_name || '';
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Send update request
-        fetch('dentists/api/editProfile', {
+        fetch('/dentists/api/editProfile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
