@@ -6,6 +6,21 @@ use Milos\Dentists\Core\Db;
 
 class ServicesModel
 {
+    public function getAllServices(): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT * FROM service";
+        $stmt = $dbh->prepare($query);
+        $stmt->execute();
+        $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!$services) {
+            return [];
+        }
+
+        return $services;
+    }
+
     public function getServiceById($id): array
     {
         $dbh = Db::getConnection();

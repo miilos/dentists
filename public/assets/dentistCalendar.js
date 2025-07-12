@@ -6,13 +6,15 @@ document.addEventListener('DOMContentLoaded', function () {
         initialView: 'timeGridWeek',
         selectable: true,
         editable: true,
+        slotMinTime: '08:00:00',
+        slotMaxTime: '16:00:00',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'timeGridWeek,timeGridDay'
         },
         events: function (fetchInfo, successCallback, failureCallback) {
-            fetch(`dentists/api/appointments/dentist/${dentistId}`, {
+            fetch(`/dentists/api/appointments/dentist/${dentistId}`, {
                 headers: { Authorization: `Bearer ${authToken}` }
             })
                 .then(res => res.json())

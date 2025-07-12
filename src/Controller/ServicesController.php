@@ -12,6 +12,24 @@ use Milos\Dentists\Model\ServicesModel;
 
 class ServicesController extends BaseController
 {
+    #[Route(path: '/api/services', method: 'get')]
+    public function getAllServices(Request $req): JSONResponse
+    {
+        $model = new ServicesModel();
+        $services = $model->getAllServices();
+
+        if (!$services) {
+            throw new APIException('No services found!', 404);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'services' => $services
+            ]
+        ]);
+    }
+
     #[Route(path: '/api/services/{id}', method: 'post')]
     #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
     #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['admin'])]

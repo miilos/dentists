@@ -1,21 +1,55 @@
 'use strict'
+
 const authToken = localStorage.getItem('authToken');
-const dentistId = localStorage.getItem('dentistId');
+let dentistId
 const appointmentsTable = document.getElementById("appointmentsTable");
 const officeHoursForm = document.getElementById("officeHoursForm");
 const officeHoursList = document.getElementById("officeHoursList");
 
+const fetchAPI = async (route, method = 'GET', data = {}) => {
+    let res
+
+    if (method !== 'GET') {
+        res = await fetch(route, {
+            method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+    }
+    else {
+        res = await fetch(route)
+    }
+
+    const json = await res.json()
+
+    return json
+}
+
+const getUser = async () => {
+    return (await fetchAPI('/dentists/api/me')).data.user
+}
+
+let noteModal;
+document.addEventListener("DOMContentLoaded", async () => {
+    dentistId = (await getUser()).id
+
+    loadAppointments()
+    loadOfficeHours()
+
+    noteModal = new bootstrap.Modal(document.getElementById('noteModal'));
+});
+
 function loadAppointments() {
-    fetch(`/dentists/api/appointments/dentist/${dentistId}`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-    })
+    fetch(`/dentists/api/appointments/dentist/${dentistId}`)
         .then(res => res.json())
         .then(data => {
             appointmentsTable.innerHTML = "";
             data.data.appointments.forEach(app => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-        <td>${app.user_first_name} ${app.user_last_name}</td>
+        <td>${app.user.first_name} ${app.user.last_name}</td>
         <td>${app.scheduled_at}</td>
         <td>${app.duration} min</td>
         <td>${app.note || '-'}</td>
@@ -36,17 +70,14 @@ function editNote(appointmentId, currentNote) {
     fetch(`/dentists/api/appointments/${appointmentId}/note`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({ note: newNote })
     }).then(() => loadAppointments());
 }
 
 function loadOfficeHours() {
-    fetch(`/dentists/api/appointments/dentist/${dentistId}`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-    })
+    fetch(`/dentists/api/appointments/dentist/${dentistId}`)
         .then(res => res.json())
         .then(data => {
             officeHoursList.innerHTML = "";
@@ -79,8 +110,7 @@ officeHoursForm.addEventListener("submit", function (e) {
     fetch('/dentists/api/appointments', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
     })
@@ -99,14 +129,6 @@ function deleteOfficeHour(id) {
     }).then(loadOfficeHours);
 }
 
-loadAppointments();
-loadOfficeHours();
-
-let noteModal;
-document.addEventListener("DOMContentLoaded", () => {
-    noteModal = new bootstrap.Modal(document.getElementById('noteModal'));
-});
-
 function editNote(appointmentId, currentNote) {
     document.getElementById("noteText").value = currentNote;
     document.getElementById("noteAppointmentId").value = appointmentId;
@@ -118,11 +140,12 @@ document.getElementById("noteForm").addEventListener("submit", function (e) {
     const appointmentId = document.getElementById("noteAppointmentId").value;
     const note = document.getElementById("noteText").value;
 
+    console.log(appointmentId)
+    
     fetch(`/dentists/api/appointments/${appointmentId}/note`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({ note })
     })

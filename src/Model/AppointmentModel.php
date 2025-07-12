@@ -199,11 +199,28 @@ class AppointmentModel
     public function getAllAppointmentsForDentist(int $id): array
     {
         $dbh = Db::getConnection();
-        $query = "SELECT * FROM appointment WHERE dentist_id = :id";
+        $query = "SELECT * FROM appointment a INNER JOIN user u ON a.user_id = u.id WHERE dentist_id = :id";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
-        $appointments = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $appointments = [];
+        foreach ($data as $appointment) {
+            $appointments[] = [
+                'id' => $appointment['id'],
+                'dentist_id' => $appointment['dentist_id'],
+                'scheduled_at' => $appointment['scheduled_at'],
+                'price' => $appointment['price'],
+                'duration' => $appointment['duration'],
+                'note' => $appointment['note'],
+                'user' => [
+                    'id' => $appointment['user_id'],
+                    'first_name' => $appointment['first_name'],
+                    'last_name' => $appointment['last_name']
+                ]
+            ];
+        }
 
         if (!$appointments) {
             return [];
