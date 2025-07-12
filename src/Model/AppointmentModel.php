@@ -155,7 +155,7 @@ class AppointmentModel
     public function getAllAppointmentsForUser(int $userId): array
     {
         $dbh = Db::getConnection();
-        $query = "SELECT a.id, a.user_id, a.dentist_id, a.scheduled_at, a.price, a.duration, ac.code, d.id, d.first_name, d.last_name, d.email, d.photo
+        $query = "SELECT a.id, a.user_id, a.dentist_id, a.scheduled_at, a.price, a.duration, ac.code, d.first_name, d.last_name, d.email, d.photo
                     FROM appointment a INNER JOIN appointment_codes ac
                     ON a.id = ac.appointment_id
                     INNER JOIN dentist d
@@ -168,6 +168,12 @@ class AppointmentModel
 
         $appointments = [];
         foreach ($res as $appointment) {
+            $servicesQuery = "SELECT * FROM appointment_service app_sr INNER JOIN service s ON     app_sr.service_id = s.id WHERE app_sr.appointment_id = :appointmentId";
+            $servicesStmt = $dbh->prepare($servicesQuery);
+            $servicesStmt->bindValue(':appointmentId', $appointment['id']);
+            $servicesStmt->execute();
+            $services = $servicesStmt->fetchAll(\PDO::FETCH_ASSOC);
+
             $appointments[] = [
                 'id' => $appointment['id'],
                 'user_id' => $appointment['user_id'],
@@ -181,7 +187,8 @@ class AppointmentModel
                     'last_name' => $appointment['last_name'],
                     'email' => $appointment['email'],
                     'photo' => $appointment['photo']
-                ]
+                ],
+                'services' => $services
             ];
         }
 
@@ -191,7 +198,7 @@ class AppointmentModel
     public function getAllAppointmentsForDentist(int $id): array
     {
         $dbh = Db::getConnection();
-        $query = "SELECT * FROM appointment WHERE dentist_id = :id AND scheduled_at > NOW()";
+        $query = "SELECT * FROM appointment WHERE dentist_id = :id";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();

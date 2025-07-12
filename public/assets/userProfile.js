@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch logged-in user data
-    fetch('dentist/api/me')
+    fetch('/dentists/api/me')
         .then(res => {
             if (!res.ok) throw new Error('Failed to fetch user data');
             return res.json();
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Send update request
-        fetch('/api/editProfile', {
+        fetch('/dentists/api/editProfile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

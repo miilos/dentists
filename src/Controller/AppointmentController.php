@@ -77,7 +77,7 @@ class AppointmentController extends BaseController
 
     #[Route(path: '/api/appointments', method: 'get')]
     #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
-    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['user'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['user', 'dentist'])]
     public function getAllAppointmentsForUser(Request $req): JsonResponse
     {
         $userId = $req->user['id'];
