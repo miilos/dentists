@@ -61,7 +61,7 @@ document.querySelector("form").addEventListener("submit", async function (e) {
 
     // If validation passes, submit to API
     try {
-        const res = await fetch('/dentists/api/signup', {
+        const res = await fetch('/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ document.querySelector("form").addEventListener("submit", async function (e) {
         if (json.status === 'success') {
             showModalSuccess('Registration successful! Please sign in.');
             setTimeout(() => {
-                window.location = '/dentists/public/signin.html';
+                window.location = '/public/signin.html';
             }, 1500);
         }
         else {

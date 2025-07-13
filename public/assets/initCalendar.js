@@ -1,7 +1,7 @@
 'use strict'
 
         const getAppointments = async () => {
-                const res = await fetch(`/dentists/api/appointments/dentist/${dentistId}`)
+                const res = await fetch(`/api/appointments/dentist/${dentistId}`)
                 const json = await res.json()
                 return json.data.appointments
         }

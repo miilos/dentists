@@ -2,7 +2,7 @@
 
 const role = localStorage.getItem('role')
 if (!role || role !== 'admin') {
-    window.location.href = '/dentists/public/signin.html'
+    window.location.href = '/public/signin.html'
 }
 
 const fetchAPI = async (route, method = 'GET', data = {}) => {
@@ -27,20 +27,20 @@ const fetchAPI = async (route, method = 'GET', data = {}) => {
 }
 
 const getUser = async () => {
-    return (await fetchAPI('/dentists/api/me')).data.user
+    return (await fetchAPI('/api/me')).data.user
 }
 
 /**** USERS ****/
 
 const getAllUsers = async () => {
-    return await fetchAPI('/dentists/api/users')
+    return await fetchAPI('/api/users')
 }
 
 const banUser = async (e) => {
     const btn = e.target
     const userId = btn.dataset.userId
     
-    const res = await fetch(`/dentists/api/ban/${userId}`)
+    const res = await fetch(`/api/ban/${userId}`)
     const data = await res.json()
 
     if (data.status === 'fail') {
@@ -57,7 +57,7 @@ const unbanUser = async (e) => {
     const btn = e.target
     const userId = btn.dataset.userId
     
-    const res = await fetch(`/dentists/api/unban/${userId}`)
+    const res = await fetch(`/api/unban/${userId}`)
     const data = await res.json()
 
     if (data.status === 'fail') {
@@ -122,7 +122,7 @@ const displayUsers = async () => {
 /**** DENTISTS ****/
 
 const getAllDentists = async () => {
-    return await fetchAPI('/dentists/api/dentists')
+    return await fetchAPI('/api/dentists')
 }
 
 const openEditForm = (e) => {
@@ -145,7 +145,7 @@ const deleteDentist = async (e) => {
     const btn = e.target
     const id = btn.dataset.dentistId
 
-    await fetch(`/dentists/api/dentists/${id}`, {
+    await fetch(`/api/dentists/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ const displayDentists = async () => {
 /**** SERVICES ****/
 
 const getAllServices = async () => {
-    return await fetchAPI('/dentists/api/services')
+    return await fetchAPI('/api/services')
 }
 
 const openServiceEditForm = (e) => {
@@ -221,7 +221,7 @@ const deleteService = async (e) => {
     const btn = e.target
     const id = btn.dataset.serviceId
 
-    await fetch(`/dentists/api/services/${id}`, {
+    await fetch(`/api/services/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async (e) => {
     const user = await getUser()
 
     if (user.role !== 'admin') {
-        window.location.href = '/dentists/public/signin.html'
+        window.location.href = '/public/signin.html'
     }
 
     await displayUsers()
@@ -292,7 +292,7 @@ document.getElementById('editFormContainer').addEventListener('submit', async (e
     const dentistLname = document.getElementById('dentistLastName').value
     const dentistPhoto = document.getElementById('dentistPhoto').value
 
-    const res = await fetchAPI(`/dentists/api/dentists/${id}`, 'POST', {
+    const res = await fetchAPI(`/api/dentists/${id}`, 'POST', {
         'first_name': dentistFname,
         'last_name': dentistLname,
         'photo': dentistPhoto
@@ -316,7 +316,7 @@ document.getElementById('editServicesFormContainer').addEventListener('submit', 
     const servicePrice = document.getElementById('servicePrice').value
     const serviceDuration = document.getElementById('serviceDuration').value
 
-    const res = await fetchAPI(`/dentists/api/services/${id}`, 'POST', {
+    const res = await fetchAPI(`/api/services/${id}`, 'POST', {
         'name': serviceName,
         'price': servicePrice,
         'duration': serviceDuration

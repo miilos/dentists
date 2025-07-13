@@ -2,7 +2,7 @@
 
 const role = localStorage.getItem('role')
 if (!role || role !== 'user') {
-    window.location.href = '/dentists/public/signin.html'
+    window.location.href = '/public/signin.html'
 }
 
 const queryString = window.location.search
@@ -75,11 +75,11 @@ const displayAppointmentStartAndEnd = () => {
 }
 
 const setDentistData = async () => {
-    const dentistRes = await fetchAPI(`/dentists/api/dentists/${dentistId}`)
+    const dentistRes = await fetchAPI(`/api/dentists/${dentistId}`)
     const dentist = dentistRes.data.dentist
 
     // set the basic dentist info at the top of the page (picture, name)
-    document.querySelector('.dentist-img').src = '/dentists' + dentist.photo
+    document.querySelector('.dentist-img').src = dentist.photo
     document.querySelector('.dentist-name').innerText = dentist.first_name + ' ' + dentist.last_name
     document.querySelector('.dentist-specialization').innerText = dentist.specialization
 
@@ -169,7 +169,7 @@ const validateData = () => {
 }
 
 const getUser = async () => {
-    return (await fetchAPI('/dentists/api/me')).data.user
+    return (await fetchAPI('/api/me')).data.user
 }
 
 document.addEventListener('DOMContentLoaded', async (e) => {
@@ -187,7 +187,7 @@ document.querySelector('.book-btn').addEventListener('click', async (e) => {
         return
     }
 
-    const res = await fetchAPI('/dentists/api/appointments', 'POST', appointment)
+    const res = await fetchAPI('/api/appointments', 'POST', appointment)
 
     if (res.status === 'success') {
         showModalSuccess('Appointment booked successfully!')

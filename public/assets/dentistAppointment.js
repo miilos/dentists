@@ -2,7 +2,7 @@
 
 const role = localStorage.getItem('role')
 if (!role || role !== 'dentist') {
-    window.location.href = '/dentists/public/signin.html'
+    window.location.href = '/public/signin.html'
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     async function fetchAppointments() {
-        const res = await fetch(`/dentists/api/appointments/dentist/${dentistId}`);
+        const res = await fetch(`/api/appointments/dentist/${dentistId}`);
         if (!res.ok) throw new Error('Failed to load appointments');
         const data = await res.json();
         return data.data.appointments;
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (selectedDate > now) {
                 console.log(JSON.stringify({ newDate: toBackendDateTime(newDate) }))                
-                const resTime = await fetch(`/dentists/api/appointments/${id}/editTime`, {
+                const resTime = await fetch(`/api/appointments/${id}/editTime`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ newDate: toBackendDateTime(newDate) })
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (!resTime.ok) throw new Error('Failed to update appointment time');
             }
 
-            const resNote = await fetch(`/dentists/api/appointments/${id}/note`, {
+            const resNote = await fetch(`/api/appointments/${id}/note`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ note })
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (missed) {
                 const userId = calendar.getEventById(id).extendedProps.user_id;
                 if (!userId) throw new Error('Missing user ID for appointment');
-                const resMissed = await fetch(`/dentists/api/missedAppointment/${userId}`, {
+                const resMissed = await fetch(`/api/missedAppointment/${userId}`, {
                     method: 'GET'
                 });
                 if (!resMissed.ok) throw new Error('Failed to record missed appointment');
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!confirm('Are you sure you want to delete this appointment?')) return;
 
         try {
-            const res = await fetch(`/dentists/api/appointments/${id}/delete`, {
+            const res = await fetch(`/api/appointments/${id}/delete`, {
                 method: 'DELETE'
             });
             if (!res.ok) throw new Error('Failed to delete appointment');

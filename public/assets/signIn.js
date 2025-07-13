@@ -41,7 +41,7 @@ signInBtn.addEventListener('click', async (e) => {
     }
 
     try {
-        const res = await fetch('/dentists/api/login', {
+        const res = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -62,20 +62,20 @@ signInBtn.addEventListener('click', async (e) => {
                 localStorage.setItem('dentistId', user.id)
                 showModalSuccess('Login successful!')
                 setTimeout(() => {
-                    window.location.href = '/dentists/public/dentistDashboard.html'
+                    window.location.href = '/public/dentistDashboard.html'
                 }, 1000)
             } 
             else if (user.role === 'admin') {
                 localStorage.setItem('adminId', user.id)
                 showModalSuccess('Login successful!')
                 setTimeout(() => {
-                    window.location.href = '/dentists/public/adminDashboard.html'
+                    window.location.href = '/public/adminDashboard.html'
                 }, 1000)
             }
             else {
                 showModalSuccess('Login successful!')
                 setTimeout(() => {
-                    window.location.href = '/dentists/index.html'
+                    window.location.href = '/index.html'
                 }, 1000)
             }
         } else {

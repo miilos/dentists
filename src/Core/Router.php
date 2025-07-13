@@ -38,7 +38,7 @@ class Router
 
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
-                    $this->registerRoute('/dentists'.$route->path, $route->method, [$controller, $method->getName()]);
+                    $this->registerRoute($route->path, $route->method, [$controller, $method->getName()]);
                 }
             }
         }

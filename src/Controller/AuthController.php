@@ -46,10 +46,10 @@ class AuthController extends BaseController
         
                 <p>
                     To activate your account, please visit
-                    <a href=\"https://localhost:8080/dentists/api/account/activate/{$token}\">this link</a>
+                    <a href=\"https://eclipse.stud.vts.su.ac.rs/api/account/activate/{$token}\">this link</a>
                 </p>
             ",
-            'Your signup was successful! Please go to http://localhost:8080/dentists/api/accounts/activate to activate your account'
+            'Your signup was successful! Please go to https://eclipse.stud.vts.su.ac.rs/api/accounts/activate to activate your account'
         );
 
         return $this->json([

@@ -8,7 +8,7 @@ async function logoutUser() {
     try {
         // Send a POST request to the backend's logout endpoint
         // This endpoint should handle session invalidation on the server-side
-        const res = await fetch('/dentists/api/logout', {
+        const res = await fetch('/api/logout', {
             method: 'GET',
         });
 

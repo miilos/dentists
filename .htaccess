@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /dentists/
+RewriteBase /
 RewriteRule ^api/(.*)$ src/index.php [L]
 
 RewriteCond %{REQUEST_FILENAME} -f [OR]

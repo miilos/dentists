@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Redirect if not logged in or not a regular user
     if (!userId || role !== 'user') {
-        window.location.href = '/dentists/public/signin.html';
+        window.location.href = '/public/signin.html';
         return;
     }
 
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadUserProfile() {
     try {
-        const res = await fetch('/dentists/api/me', {
+        const res = await fetch('/api/me', {
             credentials: 'include'
         });
         if (!res.ok) throw new Error('Failed to load user profile');
@@ -44,7 +44,7 @@ async function loadUserProfile() {
 
 async function loadAppointments() {
     try {
-        const res = await fetch('/dentists/api/appointments', { credentials: 'include' });
+        const res = await fetch('/api/appointments', { credentials: 'include' });
 
         if (!res.ok) {
             const text = await res.text();
@@ -120,7 +120,7 @@ async function submitProfileForm() {
     if (hasError) return;
 
     try {
-        const res = await fetch('/dentists/api/editProfile', {
+        const res = await fetch('/api/editProfile', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

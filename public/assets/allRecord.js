@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('records-container');
 
     try {
-        const res = await fetch(`/dentists/api/medicalRecords/dentist/${dentistId}/allPatients`);
+        const res = await fetch(`/api/medicalRecords/dentist/${dentistId}/allPatients`);
         if (!res.ok) throw new Error('Failed to fetch records from API');
 
         const json = await res.json();

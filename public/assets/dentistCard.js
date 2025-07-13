@@ -1,5 +1,5 @@
 'use strict'
-fetch('/dentists/api/dentists')
+fetch('/api/dentists')
     .then(res => res.json())
     .then(data => {
         const container = document.getElementById('dentist-card');
@@ -10,14 +10,14 @@ fetch('/dentists/api/dentists')
             col.className = 'col-md-4 mb-4';
             col.innerHTML = `
                 <div class="card h-100">
-                <img src="/dentists${d.photo}" class="card-img-top" alt="${name}">
+                <img src="${d.photo}" class="card-img-top" alt="${name}">
                     <div class="card-body">
                         <h5 class="card-title">${name}</h5>
                         <p class="card-text"><strong>Specialization:</strong> ${d.specialization}</p>
                         <div class="mb-2">
                             ${(d.services || []).map(service => `<span class="badge rounded-pill bg-secondary">${service.name}</span>`).join('')}
                         </div>
-                        <button class="btn"><a href="/dentists/public/makeAppointment.html?dentist=${d.id}" class="btn-link">Book an appointment</a></button>
+                        <button class="btn"><a href="/public/makeAppointment.html?dentist=${d.id}" class="btn-link">Book an appointment</a></button>
                     </div>
                 </div>
             `;

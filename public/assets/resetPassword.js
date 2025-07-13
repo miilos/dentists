@@ -5,7 +5,7 @@ const tokenInput = document.getElementById('reset_token')
 const submitBtn = document.getElementById('submit-btn')
 
 const sendTokenEmail = async () => {
-    const res = await fetch('/dentists/api/forgotPassword')
+    const res = await fetch('/api/forgotPassword')
     const data = await res.json()
 
     if (data.status === 'success') [
@@ -30,7 +30,7 @@ const resetPassword = async () => {
         return
     }
 
-    const res = await fetch('/dentists/api/resetPassword', {
+    const res = await fetch('/api/resetPassword', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -44,7 +44,7 @@ const resetPassword = async () => {
 
     if (data.status === 'success') {
         showModalSuccess(data.message)
-        window.location.href = '/dentists/public/profile.html'
+        window.location.href = '/public/profile.html'
     }
     else {
         showModalFail(data.message)

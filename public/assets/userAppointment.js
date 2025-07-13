@@ -5,7 +5,7 @@ let allServices = [];
 // --- Fetch all available services from the API ---
 async function fetchServices(dentistId) {
     try {
-        const response = await fetch(`/dentists/api/dentists/${dentistId}/services`);
+        const response = await fetch(`/api/dentists/${dentistId}/services`);
         const result = await response.json();
         allServices = result.data.services;
     } catch (error) {
@@ -17,7 +17,7 @@ async function fetchServices(dentistId) {
 // --- Fetch all active appointments for the user ---
 async function fetchActiveAppointments() {
     try {
-        const response = await fetch('/dentists/api/appointments/active');
+        const response = await fetch('/api/appointments/active');
         const result = await response.json();
         console.log('Appointments fetched:', result.data.appointments);
         renderAppointments(result.data.appointments);
@@ -167,7 +167,7 @@ document.getElementById('editForm').addEventListener('submit', async function (e
 
     try {
         // Send update request to API
-        const response = await fetch(`/dentists/api/appointments/${appointmentId}/services`, {
+        const response = await fetch(`/api/appointments/${appointmentId}/services`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -195,7 +195,7 @@ async function cancelAppointment(e) {
     if (!confirm('Are you sure you want to cancel this appointment?')) return;
 
     try {
-        const response = await fetch(`/dentists/api/appointments/${code}/cancel`, {
+        const response = await fetch(`/api/appointments/${code}/cancel`, {
             method: 'DELETE'
         });
 
