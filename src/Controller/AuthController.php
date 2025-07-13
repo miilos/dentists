@@ -48,8 +48,6 @@ class AuthController extends BaseController
                     To activate your account, please visit
                     <a href=\"https://localhost:8000/api/account/activate/{$token}\">this link</a>
                 </p>
-        
-                <p>Sincerely, <br>the dentists team</p>
             ",
             'Your signup was successful! Please go to http://localhost:8000/api/accounts/activate to activate your account'
         );
@@ -107,6 +105,16 @@ class AuthController extends BaseController
         ]);
     }
 
+    #[Route(path: '/api/logout', method: 'get')]
+    public function logout(Request $req): JSONResponse
+    {
+        SessionManager::remove('user');
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Logged out!'
+        ], 204);
+    }
 
     #[Route(path: '/api/users', method: 'get')]
     #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
@@ -173,8 +181,6 @@ class AuthController extends BaseController
                 <br>
                 
                 <p>This token is only valid for 5 minutes.</p>
-        
-                <p>Sincerely, <br>the dentists team</p>
             ",
             'Password reset token sent to your email! It\'s only valid for 5 minutes.'
         );

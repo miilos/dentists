@@ -37,8 +37,6 @@ class AppointmentController extends BaseController
                     <br>
                     <h1>{$appointmentCode}</h1>
                 </p>
-        
-                <p>Sincerely, <br>the dentists team</p>
             ",
             "
                     Your appointment on {$data['scheduled_at']} was successfully booked. Your appointment code is:

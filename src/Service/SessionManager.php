@@ -21,4 +21,13 @@ class SessionManager
 
         return $_SESSION[$key] ?? null;
     }
+
+    public static function remove(string $key): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        unset($_SESSION[$key]);
+    }
 }
