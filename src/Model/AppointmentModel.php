@@ -323,13 +323,30 @@ class AppointmentModel
         $stmt->bindValue(':id', $appointmentId);
         $stmt->execute();
 
+        $duration = 0;
+        $price = 0;
         foreach ($data as $serviceId) {
             $addNewServicesQuery = "INSERT INTO appointment_service (appointment_id, service_id) VALUES (:appointmentId, :serviceId)";
             $stmt = $dbh->prepare($addNewServicesQuery);
             $stmt->bindValue(':appointmentId', $appointmentId);
             $stmt->bindValue(':serviceId', $serviceId);
             $stmt->execute();
+
+            $selectPriceAndDurationQuery = "SELECT price, duration FROM service WHERE id = :id LIMIT 1";
+            $stmt = $dbh->prepare($selectPriceAndDurationQuery);
+            $stmt->bindValue(':id', $serviceId);
+            $stmt->execute();
+            $serviceData = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $price += (int) $serviceData['price'];
+            $duration += (int) $serviceData['duration'];
         }
+
+        $updateServiceQuery = "UPDATE appointment SET price = :price, duration = :duration WHERE id = :id";
+        $stmt = $dbh->prepare($updateServiceQuery);
+        $stmt->bindValue(':price', $price);
+        $stmt->bindValue(':duration', $duration);
+        $stmt->bindValue(':id', $appointmentId);
+        $stmt->execute();
 
         return true;
     }

@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const selectedDate = new Date(newDate);
 
             if (selectedDate > now) {
+                console.log(JSON.stringify({ newDate: toBackendDateTime(newDate) }))                
                 const resTime = await fetch(`/dentists/api/appointments/${id}/editTime`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

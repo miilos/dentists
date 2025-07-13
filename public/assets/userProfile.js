@@ -1,11 +1,12 @@
 'use strict';
+
 document.addEventListener('DOMContentLoaded', () => {
     const userId = localStorage.getItem('userId');
     const role = localStorage.getItem('role');
 
     // Redirect if not logged in or not a regular user
     if (!userId || role !== 'user') {
-        window.location.href = '/dentists/signin.html';
+        window.location.href = '/dentists/public/signin.html';
         return;
     }
 

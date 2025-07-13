@@ -62,13 +62,21 @@ signInBtn.addEventListener('click', async (e) => {
                 localStorage.setItem('dentistId', user.id)
                 showModalSuccess('Login successful!')
                 setTimeout(() => {
-                    window.location.href = '/dentists/dentistDashboard.html'
-                }, 1500)
-            } else {
+                    window.location.href = '/dentists/public/dentistDashboard.html'
+                }, 1000)
+            } 
+            else if (user.role === 'admin') {
+                localStorage.setItem('adminId', user.id)
+                showModalSuccess('Login successful!')
+                setTimeout(() => {
+                    window.location.href = '/dentists/public/adminDashboard.html'
+                }, 1000)
+            }
+            else {
                 showModalSuccess('Login successful!')
                 setTimeout(() => {
                     window.location.href = '/dentists/index.html'
-                }, 1500)
+                }, 1000)
             }
         } else {
             showModalFail(json.message || 'Invalid login.')

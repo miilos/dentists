@@ -167,7 +167,7 @@ document.getElementById('editForm').addEventListener('submit', async function (e
 
     try {
         // Send update request to API
-        const response = await fetch(`/dentists/api/appointments/${appointmentId}/update`, {
+        const response = await fetch(`/dentists/api/appointments/${appointmentId}/services`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

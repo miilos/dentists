@@ -9,8 +9,7 @@ async function logoutUser() {
         // Send a POST request to the backend's logout endpoint
         // This endpoint should handle session invalidation on the server-side
         const res = await fetch('/dentists/api/logout', {
-            method: 'POST',
-            credentials: 'include' // Include cookies for session invalidation
+            method: 'GET',
         });
 
         if (!res.ok) {
@@ -21,7 +20,8 @@ async function logoutUser() {
 
         // If logout is successful on the server, redirect the user to the index page
         // Adjust this path if your index.html is located elsewhere relative to the current page
-        window.location.href = 'dentists/index.html';
+        window.location.href = '/dentists/index.html';
+        localStorage.clear()
 
     } catch (err) {
         console.error('Error logging out:', err);
