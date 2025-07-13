@@ -8,6 +8,7 @@ body {
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
+    color: #374151; /* Default text color */
 }
 html{
     scroll-behavior: smooth;
@@ -70,7 +71,7 @@ html{
 
 .btn-edit {
     background-color: #f5da60;
-    color: 000;
+    color: #000;
 }
 
 .btn-edit:hover {
@@ -95,21 +96,22 @@ footer{
 }
 
 .modal-container {
-    width: 30%;
+    width: 90%; /* Responsive width for small screens */
+    max-width: 400px; /* Max width for larger screens */
     padding: 20px;
     padding-bottom: 40px;
     border-radius: 25px;
-    position: absolute;
+    position: fixed; /* Changed to fixed for better overlay behavior */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    z-index: 10;
-
+    z-index: 1000; /* Increased z-index */
     display: flex;
     flex-direction: column;
     align-items: center;
-    display: none;
+    display: none; /* Hidden by default */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Added shadow */
 }
 
 .modal-title {
@@ -126,6 +128,7 @@ footer{
     top: 20px;
     right: 20px;
     cursor: pointer;
+    font-size: 1.5rem; /* Adjusted size */
 }
 
 .modal--success {
@@ -136,10 +139,18 @@ footer{
     background-color: #c74933;
 }
 
+/* Renamed .err to .error-message for clarity */
 .err {
-    visibility: hidden;
-    color: #c74933
+    color: #c74933;
+    min-height: 1.2em; /* Reserve space to prevent layout shifts */
+    display: block; /* Ensure it takes up space when visible */
 }
+
+/* New class to hide error messages using display: none */
+.hidden-error {
+    display: none;
+}
+
 #calendar {
     max-width: 60%;
     margin: 30px auto;
@@ -160,4 +171,15 @@ footer{
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     margin-left: auto;
     margin-right: auto;
+}
+/* Overlay for the modal */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 }
