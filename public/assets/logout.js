@@ -20,7 +20,7 @@ async function logoutUser() {
 
         // If logout is successful on the server, redirect the user to the index page
         // Adjust this path if your index.html is located elsewhere relative to the current page
-        window.location.href = '/dentists/index.html';
+        window.location.href = '/index.html';
         localStorage.clear()
 
     } catch (err) {

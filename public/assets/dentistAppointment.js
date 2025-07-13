@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const now = new Date();
             const selectedDate = new Date(newDate);
 
+            /*
             if (selectedDate > now) {
                 console.log(JSON.stringify({ newDate: toBackendDateTime(newDate) }))                
                 const resTime = await fetch(`/api/appointments/${id}/editTime`, {
@@ -113,6 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 if (!resTime.ok) throw new Error('Failed to update appointment time');
             }
+                */
 
             const resNote = await fetch(`/api/appointments/${id}/note`, {
                 method: 'POST',
