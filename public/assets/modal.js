@@ -1,6 +1,6 @@
 'use strict'
 
-const modal = document.querySelector('.modal-container')
+let modal = document.querySelector('.modal-container')
 const modalCloseBtn = document.querySelector('.modal-close-btn')
 
 const showModalSuccess = (message) => {

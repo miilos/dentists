@@ -80,7 +80,7 @@ document.querySelector("form").addEventListener("submit", async function (e) {
         if (json.status === 'success') {
             showModalSuccess('Registration successful! Please sign in.');
             setTimeout(() => {
-                window.location = 'public/signin.html';
+                window.location = '/dentists/public/signin.html';
             }, 1500);
         }
         else {

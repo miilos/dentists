@@ -47,6 +47,21 @@ class UserModel
         return $stmt->rowCount() > 0;
     }
 
+    public function getAllUsers(): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT id, first_name, last_name, email, num_missed_appointments, is_banned FROM user WHERE role = 'user'";
+        $stmt = $dbh->prepare($query);
+        $stmt->execute();
+        $users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!$users) {
+            return [];
+        }
+
+        return $users;
+    }
+
     public function getUserByEmail(string $email): array
     {
         $dbh = Db::getConnection();

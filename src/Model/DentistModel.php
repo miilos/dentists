@@ -9,7 +9,7 @@ class DentistModel
     public function getAllDentists(): array
     {
         $dbh = Db::getConnection();
-        $query = "SELECT * FROM dentist ORDER BY first_name, last_name";
+        $query = "SELECT * FROM dentist ORDER BY id";
         $stmt = $dbh->prepare($query);
         $stmt->execute();
         $dentists = $stmt->fetchAll(\PDO::FETCH_ASSOC);

@@ -77,8 +77,30 @@ class ServicesController extends BaseController
         }
 
         return $this->json([
-            'status' => $status,
+            'status' => 'success',
             'message' => 'Service updated successfully!'
         ]);
+    }
+
+    #[Route('/api/services/{id}', method: 'delete')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['admin'])]
+    public function deleteService(Request $req): JSONResponse
+    {
+        $id = $req->params['id'];
+
+        $model = new ServicesModel();
+        $service = $model->getServiceById($id);
+
+        if (!$service) {
+            throw new APIException('No service found with that id!', 400);
+        }
+
+        $model->deleteService($id);
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Service deleted successfully!'
+        ], 204);
     }
 }

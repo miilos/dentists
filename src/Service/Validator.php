@@ -43,9 +43,9 @@ class Validator
             $errors['password'][] = 'You have to set a password';
         }
 
-        if ($data['password'] !== $data['password_confirm']) {
-            $errors['password_confirm'][] = 'This field has to match password';
-        }
+//        if ($data['password'] !== $data['password_confirm']) {
+//            $errors['password_confirm'][] = 'This field has to match password';
+//        }
 
         return $errors;
     }

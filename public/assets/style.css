@@ -52,6 +52,31 @@ html{
     text-decoration: none;
 }
 
+.btn-ban {
+    background-color: #c74933;
+    transition: 0.3s;
+}
+
+.btn-ban:hover {
+    background-color: #9c2f1b;
+    color: #fff;
+}
+
+.btn-unban {
+    background-color: #fff;
+    color: #c74933;
+    border: 1px solid #c74933
+}
+
+.btn-edit {
+    background-color: #f5da60;
+    color: 000;
+}
+
+.btn-edit:hover {
+    background-color: #eec50f;
+}
+
 .doctor-section{
     padding: 1rem;
 }
@@ -123,7 +148,8 @@ footer{
 .fc-event-title button {
     margin-left: 8px;
 }
-#editFormContainer {
+#editFormContainer,
+#editServicesFormContainer {
     display: none;
     margin-top: 30px;
     padding: 20px;

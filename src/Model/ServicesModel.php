@@ -64,4 +64,25 @@ class ServicesModel
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
+
+    public function deleteService(int $serviceId): bool
+    {
+        $dbh = Db::getConnection();
+        $deleteDentistServiceQuery = "DELETE FROM dentist_service WHERE service_id = :service_id";
+        $stmt = $dbh->prepare($deleteDentistServiceQuery);
+        $stmt->bindValue(':service_id', $serviceId);
+        $stmt->execute();
+
+        $deleteAppointmentServiceQuery = "DELETE FROM appointment_service WHERE service_id = :service_id";
+        $stmt = $dbh->prepare($deleteAppointmentServiceQuery);
+        $stmt->bindValue(':service_id', $serviceId);
+        $stmt->execute();
+
+        $deleteServiceQuery = "DELETE FROM service WHERE id = :service_id";
+        $stmt = $dbh->prepare($deleteServiceQuery);
+        $stmt->bindValue(':service_id', $serviceId);
+        $stmt->execute();
+
+        return true;
+    }
 }

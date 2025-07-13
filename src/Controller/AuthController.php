@@ -107,6 +107,27 @@ class AuthController extends BaseController
         ]);
     }
 
+
+    #[Route(path: '/api/users', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['dentist', 'admin'])]
+    public function getAllUsers(Request $req): JSONResponse
+    {
+        $model = new UserModel();
+        $users = $model->getAllUsers();
+
+        if (!$users) {
+            throw new APIException('No users found!', 404);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'users' => $users
+            ]
+        ]);
+    }
+
     #[Route(path: '/api/me', method: 'get')]
     #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
     public function getUser(Request $req): JSONResponse
