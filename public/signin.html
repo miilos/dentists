@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="assets/style.css">
     <title>Sign in</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg ">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -23,49 +23,55 @@
                     <a class="nav-link" href="/dentists/index.html">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">Signup</a>
+                    <a class="nav-link" href="/dentists/public/signup.html">Signup</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="border-container w-50 w-lg-50 px-3">
-        <form method="POST" action="#">
-            <div class="mb-3">
-                <p class="err err-email">You need to enter your email!</p>
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email"
-                       required>
+
+<div class="container flex-grow-1 d-flex justify-content-center align-items-center py-5">
+    <div class="row justify-content-center w-100">
+        <div class="col-12 col-md-8 col-lg-5">
+            <div class="border-container p-4">
+                <form method="POST" action="#">
+                    <div class="mb-3">
+                        <p class="err err-email" id="error-email-msg">You need to enter your email!</p>
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <p class="err err-pass" id="error-password-msg">You need to enter your password!</p>
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn w-50" id="sign-in-btn">Sign in</button> <!-- Added w-50 for responsive width -->
+                    </div>
+                    <p class="text-center mt-3"><a href="/dentists/public/resetPassword.html" class="text-decoration-none">Forgot password?</a></p>
+                </form>
             </div>
-            <div class="mb-3">
-                <p class="err err-pass">You need to enter your password!</p>
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <div class="text-center">
-                <button type="submit" class="btn w-30" id="sign-in-btn">Sign in</button>
-            </div>
-          <p class="text-center mt-3"><a href="/dentists/public/resetPassword.html">Forgot password?</a></p>
-        </form>
+        </div>
     </div>
 </div>
 
-<footer class="text-center">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+<footer class="text-center py-2 mt-auto">
+    <div class="text-center p-2" style="background-color: rgba(0, 0, 0, 0.05);">
         &copy; 2025 Dentists
     </div>
 </footer>
 
+<div class="modal-overlay"></div>
+
 <div class="modal-container">
-        <span class="material-symbols-outlined modal-close-btn">
-            close
-        </span>
+    <span class="material-symbols-outlined modal-close-btn">
+        close
+    </span>
     <h1 class="modal-title">Appointment booked successfully!</h1>
 </div>
 
 <script src="/dentists/public/assets/modal.js"></script>
-<script src="/dentists/public/assets/signIn.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/dentists/public/assets/signIn.js"></script>
 </body>
 </html>
