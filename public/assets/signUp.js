@@ -61,7 +61,7 @@ document.querySelector("form").addEventListener("submit", async function (e) {
 
     // If validation passes, submit to API
     try {
-        const res = await fetch('/dentists/api/register', {
+        const res = await fetch('/dentists/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

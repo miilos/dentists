@@ -4,53 +4,78 @@ const signInBtn = document.getElementById('sign-in-btn')
 const emailInput = document.getElementById('email')
 const passwordInput = document.getElementById('password')
 
-document.querySelector('.err-email').style.visibility = 'hidden'
-document.querySelector('.err-pass').style.visibility = 'hidden'
+const errEmail = document.querySelector('.err-email')
+const errPass = document.querySelector('.err-pass')
+
+errEmail.style.visibility = 'hidden'
+errPass.style.visibility = 'hidden'
 
 const validate = (email, password) => {
+    let isValid = true;
+
     if (!email) {
-        document.querySelector('.err-email').style.visibility = 'visible'
-        return false
+        errEmail.style.visibility = 'visible'
+        isValid = false
+    } else {
+        errEmail.style.visibility = 'hidden'
     }
 
     if (!password) {
-        document.querySelector('.err-pass').style.visibility = 'visible'
-        return false
+        errPass.style.visibility = 'visible'
+        isValid = false
+    } else {
+        errPass.style.visibility = 'hidden'
     }
 
-    return true
+    return isValid
 }
 
 signInBtn.addEventListener('click', async (e) => {
     e.preventDefault()
 
-    const email = emailInput.value
-    const password = passwordInput.value
+    const email = emailInput.value.trim()
+    const password = passwordInput.value.trim()
 
     if (!validate(email, password)) {
         return
     }
 
-    const res = await fetch('/dentists/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            email,
-            password
+    try {
+        const res = await fetch('/dentists/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
         })
-    })
 
-    const json = await res.json()
+        const json = await res.json()
 
-    if (json.status === 'success') {
-        showModalSuccess('Login successful!')
-        setTimeout(() => {
-            window.location = '/dentists/'
-        }, 1500)
-    }
-    else {
-        showModalFail(json.message)
+        if (json.status === 'success') {
+            const user = json.data.user
+
+            // Save user data to localStorage
+            localStorage.setItem('userId', user.id)
+            localStorage.setItem('role', user.role)
+
+            if (user.role === 'dentist') {
+                localStorage.setItem('dentistId', user.id)
+                showModalSuccess('Login successful!')
+                setTimeout(() => {
+                    window.location.href = '/dentists/dentistDashboard.html'
+                }, 1500)
+            } else {
+                showModalSuccess('Login successful!')
+                setTimeout(() => {
+                    window.location.href = '/dentists/index.html'
+                }, 1500)
+            }
+        } else {
+            showModalFail(json.message || 'Invalid login.')
+        }
+
+    } catch (error) {
+        console.error('Login error:', error)
+        showModalFail('Something went wrong. Please try again.')
     }
 })

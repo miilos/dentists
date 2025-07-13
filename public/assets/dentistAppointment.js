@@ -1,156 +1,158 @@
-'use strict'
+'use strict';
 
-const authToken = localStorage.getItem('authToken');
-let dentistId
-const appointmentsTable = document.getElementById("appointmentsTable");
-const officeHoursForm = document.getElementById("officeHoursForm");
-const officeHoursList = document.getElementById("officeHoursList");
+document.addEventListener('DOMContentLoaded', async () => {
+    const calendarEl = document.getElementById('calendar');
 
-const fetchAPI = async (route, method = 'GET', data = {}) => {
-    let res
+    const appointmentForm = document.getElementById('appointmentForm');
+    const appointmentIdInput = document.getElementById('appointmentId');
+    const appointmentDateInput = document.getElementById('appointmentDate');
+    const appointmentNotesInput = document.getElementById('appointmentNotes');
+    const missedCheckbox = document.getElementById('missedCheckbox');
+    const deleteBtn = document.getElementById('deleteBtn');
 
-    if (method !== 'GET') {
-        res = await fetch(route, {
-            method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-    }
-    else {
-        res = await fetch(route)
+    const dentistId = localStorage.getItem('dentistId');
+
+    if (!dentistId) {
+        alert('Dentist not logged in!');
+        return;
     }
 
-    const json = await res.json()
-
-    return json
-}
-
-const getUser = async () => {
-    return (await fetchAPI('/dentists/api/me')).data.user
-}
-
-let noteModal;
-document.addEventListener("DOMContentLoaded", async () => {
-    dentistId = (await getUser()).id
-
-    loadAppointments()
-    loadOfficeHours()
-
-    noteModal = new bootstrap.Modal(document.getElementById('noteModal'));
-});
-
-function loadAppointments() {
-    fetch(`/dentists/api/appointments/dentist/${dentistId}`)
-        .then(res => res.json())
-        .then(data => {
-            appointmentsTable.innerHTML = "";
-            data.data.appointments.forEach(app => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-        <td>${app.user.first_name} ${app.user.last_name}</td>
-        <td>${app.scheduled_at}</td>
-        <td>${app.duration} min</td>
-        <td>${app.note || '-'}</td>
-        <td>
-          <a class="btn btn-sm btn-primary" href="healthRecord.html?user_id=${app.user_id}">View Record</a>
-          <button class="btn btn-sm btn-secondary" onclick="editNote(${app.id}, '${app.note || ''}')">Edit Note</button>
-        </td>
-      `;
-                appointmentsTable.appendChild(tr);
-            });
-        });
-}
-
-function editNote(appointmentId, currentNote) {
-    const newNote = prompt("Enter treatment note:", currentNote);
-    if (newNote === null) return;
-
-    fetch(`/dentists/api/appointments/${appointmentId}/note`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ note: newNote })
-    }).then(() => loadAppointments());
-}
-
-function loadOfficeHours() {
-    fetch(`/dentists/api/appointments/dentist/${dentistId}`)
-        .then(res => res.json())
-        .then(data => {
-            officeHoursList.innerHTML = "";
-            data.data.appointments.forEach(a => {
-                const li = document.createElement("li");
-                li.className = "list-group-item";
-                li.innerHTML = `
-        ${a.scheduled_at} (${a.duration} min)
-        <button class="btn btn-sm btn-danger" onclick="deleteOfficeHour(${a.id})">Delete</button>
-      `;
-                officeHoursList.appendChild(li);
-            });
-        });
-}
-
-officeHoursForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const start = document.getElementById("officeStart").value;
-    const duration = document.getElementById("officeDuration").value;
-
-    const payload = {
-        dentist_id: parseInt(dentistId),
-        scheduled_at: start,
-        duration: parseInt(duration),
-        price: 0,
-        note: "Office Hour",
-        services: []
+    const toDatetimeLocal = (dateStr) => {
+        const dt = new Date(dateStr);
+        const off = dt.getTimezoneOffset();
+        const local = new Date(dt.getTime() - off * 60 * 1000);
+        return local.toISOString().slice(0, 16);
     };
 
-    fetch('/dentists/api/appointments', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+    const toBackendDateTime = (datetimeLocal) => {
+        return datetimeLocal.replace('T', ' ') + ':00';
+    };
+
+    async function fetchAppointments() {
+        const res = await fetch(`/dentists/api/appointments/dentist/${dentistId}`);
+        if (!res.ok) throw new Error('Failed to load appointments');
+        const data = await res.json();
+        return data.data.appointments;
+    }
+
+    let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        nowIndicator: true,
+        selectable: true,
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        body: JSON.stringify(payload)
-    })
-        .then(() => {
-            loadOfficeHours();
-            officeHoursForm.reset();
-        });
-});
-
-function deleteOfficeHour(id) {
-    if (!confirm("Delete this time slot?")) return;
-
-    fetch(`/dentists/api/appointments/${id}/delete`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${authToken}` }
-    }).then(loadOfficeHours);
-}
-
-function editNote(appointmentId, currentNote) {
-    document.getElementById("noteText").value = currentNote;
-    document.getElementById("noteAppointmentId").value = appointmentId;
-    noteModal.show();
-}
-
-document.getElementById("noteForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const appointmentId = document.getElementById("noteAppointmentId").value;
-    const note = document.getElementById("noteText").value;
-
-    console.log(appointmentId)
-    
-    fetch(`/dentists/api/appointments/${appointmentId}/note`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+        events: async (info, successCallback, failureCallback) => {
+            try {
+                const appointments = await fetchAppointments();
+                const events = appointments.map(app => ({
+                    id: app.id.toString(),
+                    title: app.note || 'Appointment',
+                    start: app.scheduled_at.replace(' ', 'T'),
+                    end: new Date(new Date(app.scheduled_at).getTime() + app.duration * 60000).toISOString(),
+                    extendedProps: {
+                        note: app.note || '',
+                        missed: false,
+                        user_id: app.user?.id || null
+                    },
+                    color: '#3c8dbc'
+                }));
+                successCallback(events);
+            } catch (e) {
+                failureCallback(e);
+            }
         },
-        body: JSON.stringify({ note })
-    })
-        .then(() => {
-            noteModal.hide();
-            loadAppointments();
-        });
+        eventClick: (info) => {
+            const event = info.event;
+            const now = new Date();
+
+            appointmentIdInput.value = event.id;
+            appointmentDateInput.value = toDatetimeLocal(event.startStr);
+            appointmentDateInput.disabled = event.start < now; // ne menjaj prošlost
+            appointmentNotesInput.value = event.extendedProps.note;
+            missedCheckbox.checked = false; // manualno unosi
+            missedCheckbox.disabled = false;
+
+            appointmentForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+
+    calendar.render();
+
+    appointmentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id = appointmentIdInput.value;
+        const newDate = appointmentDateInput.value;
+        const note = appointmentNotesInput.value.trim();
+        const missed = missedCheckbox.checked;
+
+        if (!id) {
+            alert('Select an appointment first.');
+            return;
+        }
+
+        try {
+            const now = new Date();
+            const selectedDate = new Date(newDate);
+
+            // Ako je budući datum, dozvoljena izmena datuma
+            if (selectedDate > now) {
+                const resTime = await fetch(`/dentists/api/appointments/${id}/editTime`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newDate: toBackendDateTime(newDate) })
+                });
+                if (!resTime.ok) throw new Error('Failed to update appointment time');
+            }
+
+            // Uvek dozvoljena izmena beleške
+            const resNote = await fetch(`/dentists/api/appointments/${id}/note`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ note })
+            });
+            if (!resNote.ok) throw new Error('Failed to update appointment note');
+
+            // Ako je checkbox čekiran, evidentiraj propušten termin
+            if (missed) {
+                const userId = calendar.getEventById(id).extendedProps.user_id;
+                if (!userId) throw new Error('Missing user ID for appointment');
+                const resMissed = await fetch(`/dentists/api/missedAppointment/${userId}`, {
+                    method: 'GET'
+                });
+                if (!resMissed.ok) throw new Error('Failed to record missed appointment');
+            }
+
+            alert('Appointment updated successfully!');
+            calendar.refetchEvents();
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+
+    deleteBtn.addEventListener('click', async () => {
+        const id = appointmentIdInput.value;
+        if (!id) {
+            alert('Select an appointment first.');
+            return;
+        }
+
+        if (!confirm('Are you sure you want to delete this appointment?')) return;
+
+        try {
+            const res = await fetch(`/dentists/api/appointments/${id}/delete`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('Failed to delete appointment');
+
+            alert('Appointment deleted successfully!');
+            appointmentForm.reset();
+            calendar.refetchEvents();
+        } catch (err) {
+            alert(err.message);
+        }
+    });
 });
