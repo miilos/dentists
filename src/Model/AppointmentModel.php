@@ -118,6 +118,33 @@ class AppointmentModel
 
         return $overlappingAppointments;
     }
+    public function getAllMedicalRecordsForUser(int $userId): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT a.id, a.scheduled_at, a.price, a.duration, a.note,
+                     d.first_name AS dentist_first_name, d.last_name AS dentist_last_name
+              FROM appointment a
+              INNER JOIN dentist d ON a.dentist_id = d.id
+              WHERE a.user_id = :userId
+              ORDER BY a.scheduled_at DESC";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':userId', $userId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getUniquePatientsForDentist(int $dentistId): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT DISTINCT u.id, u.first_name, u.last_name
+              FROM appointment a
+              INNER JOIN user u ON a.user_id = u.id
+              WHERE a.dentist_id = :dentistId";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':dentistId', $dentistId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     public function getActiveAppointmentsForUser(int $userId): array
     {
@@ -334,4 +361,49 @@ class AppointmentModel
 
         return $status;
     }
+    public function getAllAppointmentsForPatientsOfDentist(int $dentistId): array
+    {
+        $dbh = Db::getConnection();
+
+        $queryPatients = "SELECT DISTINCT user_id FROM appointment WHERE dentist_id = :dentistId";
+        $stmtPatients = $dbh->prepare($queryPatients);
+        $stmtPatients->bindValue(':dentistId', $dentistId);
+        $stmtPatients->execute();
+        $patientIds = $stmtPatients->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($patientIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($patientIds), '?'));
+        $queryAppointments = "
+        SELECT 
+            a.*, 
+            d.first_name AS dentist_first_name, d.last_name AS dentist_last_name,
+            u.first_name AS user_first_name, u.last_name AS user_last_name
+        FROM appointment a
+        INNER JOIN dentist d ON a.dentist_id = d.id
+        INNER JOIN user u ON a.user_id = u.id
+        WHERE a.user_id IN ($placeholders)
+        ORDER BY u.last_name, a.scheduled_at
+    ";
+        $stmtAppointments = $dbh->prepare($queryAppointments);
+        foreach ($patientIds as $k => $patientId) {
+            $stmtAppointments->bindValue($k+1, $patientId);
+        }
+        $stmtAppointments->execute();
+        $appointments = $stmtAppointments->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($appointments as &$app) {
+            $servicesQuery = "SELECT s.name FROM appointment_service aps INNER JOIN service s ON aps.service_id = s.id WHERE aps.appointment_id = :appointmentId";
+            $servicesStmt = $dbh->prepare($servicesQuery);
+            $servicesStmt->bindValue(':appointmentId', $app['id']);
+            $servicesStmt->execute();
+            $services = $servicesStmt->fetchAll(PDO::FETCH_COLUMN);
+            $app['services'] = $services;
+        }
+
+        return $appointments;
+    }
+
 }

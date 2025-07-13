@@ -258,4 +258,21 @@ class AppointmentController extends BaseController
             'message' => 'User marked for missing an appointment successfully!'
         ]);
     }
+    #[Route(path: '/api/medicalRecords/dentist/{id}/allPatients', method: 'get')]
+    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
+    #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['dentist'])]
+    public function getAllAppointmentsForPatientsOfDentist(Request $req): JsonResponse
+    {
+        $dentistId = (int)$req->params['id'];
+        $model = new AppointmentModel();
+        $appointments = $model->getAllAppointmentsForPatientsOfDentist($dentistId);
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'appointments' => $appointments
+            ]
+        ]);
+    }
+
 }

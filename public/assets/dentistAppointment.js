@@ -10,18 +10,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const missedCheckbox = document.getElementById('missedCheckbox');
     const deleteBtn = document.getElementById('deleteBtn');
 
+
     const dentistId = localStorage.getItem('dentistId');
 
     if (!dentistId) {
-        alert('Dentist not logged in!');
+        alert('Dentist not logged in! Please set dentistId in localStorage.');
         return;
     }
 
     const toDatetimeLocal = (dateStr) => {
         const dt = new Date(dateStr);
         const off = dt.getTimezoneOffset();
-        const local = new Date(dt.getTime() - off * 60 * 1000);
-        return local.toISOString().slice(0, 16);
+        const local = new Date(dt.getTime() - off * 60000);
+        return local.toISOString().slice(0,16);
     };
 
     const toBackendDateTime = (datetimeLocal) => {
@@ -70,9 +71,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             appointmentIdInput.value = event.id;
             appointmentDateInput.value = toDatetimeLocal(event.startStr);
-            appointmentDateInput.disabled = event.start < now; // ne menjaj prošlost
+            appointmentDateInput.disabled = event.start < now;
             appointmentNotesInput.value = event.extendedProps.note;
-            missedCheckbox.checked = false; // manualno unosi
+            missedCheckbox.checked = false;
             missedCheckbox.disabled = false;
 
             appointmentForm.scrollIntoView({ behavior: 'smooth' });
@@ -98,7 +99,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const now = new Date();
             const selectedDate = new Date(newDate);
 
-            // Ako je budući datum, dozvoljena izmena datuma
             if (selectedDate > now) {
                 const resTime = await fetch(`/dentists/api/appointments/${id}/editTime`, {
                     method: 'POST',
@@ -108,7 +108,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (!resTime.ok) throw new Error('Failed to update appointment time');
             }
 
-            // Uvek dozvoljena izmena beleške
             const resNote = await fetch(`/dentists/api/appointments/${id}/note`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -116,7 +115,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             if (!resNote.ok) throw new Error('Failed to update appointment note');
 
-            // Ako je checkbox čekiran, evidentiraj propušten termin
             if (missed) {
                 const userId = calendar.getEventById(id).extendedProps.user_id;
                 if (!userId) throw new Error('Missing user ID for appointment');
