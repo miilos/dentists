@@ -1,5 +1,10 @@
 'use strict'
 
+const role = localStorage.getItem('role')
+if (!role || role !== 'user') {
+    window.location.href = '/dentists/public/signin.html'
+}
+
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 
@@ -15,9 +20,6 @@ let appointment = {
     total: 0,
     duration: 0
 }
-
-const modal = document.querySelector('.modal-container')
-const modalCloseBtn = document.querySelector('.modal-close-btn')
 
 const fetchAPI = async (route, method = 'GET', data = {}) => {
     let res
@@ -181,25 +183,16 @@ document.querySelector('.book-btn').addEventListener('click', async (e) => {
     const validationRes = validateData()
 
     if (validationRes.status === 'fail') {
-        modal.style.display = 'flex'
-        modal.classList.add('modal--fail')
-        modal.querySelector('.modal-title').innerText = validationRes.message
+        showModalFail(validationRes.message)
         return
     }
 
     const res = await fetchAPI('/dentists/api/appointments', 'POST', appointment)
 
-    modal.style.display = 'flex'
     if (res.status === 'success') {
-        modal.classList.add('modal--success')
+        showModalSuccess('Appointment booked successfully!')
     }
     else if (res.status === 'fail') {
-        modal.classList.add('modal--fail')
+        showModalFail(res.message)
     }
-
-    modal.querySelector('.modal-title').innerText = res.message
-})
-
-modalCloseBtn.addEventListener('click', (e) => {
-    modal.style.display = 'none'
 })

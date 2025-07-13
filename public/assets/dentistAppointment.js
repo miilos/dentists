@@ -1,5 +1,10 @@
 'use strict';
 
+const role = localStorage.getItem('role')
+if (!role || role !== 'dentist') {
+    window.location.href = '/dentists/public/signin.html'
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const calendarEl = document.getElementById('calendar');
 

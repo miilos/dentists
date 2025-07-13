@@ -1,5 +1,10 @@
 'use strict'
 
+const role = localStorage.getItem('role')
+if (!role || role !== 'admin') {
+    window.location.href = '/dentists/public/signin.html'
+}
+
 const fetchAPI = async (route, method = 'GET', data = {}) => {
     let res
 

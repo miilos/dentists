@@ -46,10 +46,10 @@ class AuthController extends BaseController
         
                 <p>
                     To activate your account, please visit
-                    <a href=\"https://localhost:8000/api/account/activate/{$token}\">this link</a>
+                    <a href=\"https://localhost:8080/dentists/api/account/activate/{$token}\">this link</a>
                 </p>
             ",
-            'Your signup was successful! Please go to http://localhost:8000/api/accounts/activate to activate your account'
+            'Your signup was successful! Please go to http://localhost:8080/dentists/api/accounts/activate to activate your account'
         );
 
         return $this->json([
@@ -101,7 +101,10 @@ class AuthController extends BaseController
 
         return $this->json([
             'status' => 'success',
-            'message' => 'Login successful!'
+            'message' => 'Login successful!',
+            'data' => [
+                'user' => $user
+            ]
         ]);
     }
 
