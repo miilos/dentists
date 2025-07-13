@@ -21,7 +21,7 @@ class ServicesModel
         return $services;
     }
 
-    public function getServiceById($id): array
+    public function getServiceById(int $id): array
     {
         $dbh = Db::getConnection();
         $stmt = $dbh->prepare("SELECT * FROM service WHERE id = :id LIMIT 1");
@@ -34,6 +34,22 @@ class ServicesModel
         }
 
         return $service;
+    }
+
+    public function getServicesForDentist(int $id): array
+    {
+        $dbh = Db::getConnection();
+        $query = "SELECT s.id, s.name, s.duration, s.price FROM service s INNER JOIN dentist_service ds ON s.id = ds.service_id WHERE ds.dentist_id = :id";
+        $stmt = $dbh->prepare($query);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        $services = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!$services) {
+            return [];
+        }
+
+        return $services;
     }
 
     public function editService(int $serviceId, array $data): bool

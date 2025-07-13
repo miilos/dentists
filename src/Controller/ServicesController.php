@@ -30,6 +30,26 @@ class ServicesController extends BaseController
         ]);
     }
 
+    #[Route(path: '/api/dentists/{id}/services', method: 'get')]
+    public function getServicesForDentist(Request $req): JSONResponse
+    {
+        $id = $req->params['id'];
+
+        $model = new ServicesModel();
+        $services = $model->getServicesForDentist($id);
+
+        if (!$services) {
+            throw new APIException('No services found!', 404);
+        }
+
+        return $this->json([
+            'status' => 'success',
+            'data' => [
+                'services' => $services
+            ]
+        ]);
+    }
+
     #[Route(path: '/api/services/{id}', method: 'post')]
     #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
     #[Middleware(function: [AuthMiddleware::class, 'authorize'], args: ['admin'])]
