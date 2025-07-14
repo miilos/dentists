@@ -1,9 +1,9 @@
-'use strict'
+'use strict';
 
-document.querySelector("form").addEventListener("submit", async function (e) {
-    e.preventDefault(); // Always prevent default to handle submission ourselves
+document.getElementById("signupForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-    const firstName = document.getElementById("fist_name").value.trim();
+    const firstName = document.getElementById("first_name").value.trim();
     const lastName = document.getElementById("last_name").value.trim();
     const email = document.getElementById("email").value.trim();
     const phone = document.getElementById("phone").value.trim();
@@ -17,9 +17,10 @@ document.querySelector("form").addEventListener("submit", async function (e) {
         password: document.getElementById("error-password")
     };
 
-    // Clear previous errors
+    // Clear previous errors and hide them
     for (let key in errors) {
         errors[key].textContent = "";
+        errors[key].classList.add('hidden-error');
     }
 
     const nameRegex = /^[A-Za-zČĆŽŠĐčćžšđ\s\-']+$/;
@@ -28,38 +29,40 @@ document.querySelector("form").addEventListener("submit", async function (e) {
 
     let hasError = false;
 
-    // Client-side validation
     if (!nameRegex.test(firstName)) {
         errors.firstName.textContent = "Only letters allowed in First Name.";
+        errors.firstName.classList.remove('hidden-error');
         hasError = true;
     }
 
     if (!nameRegex.test(lastName)) {
         errors.lastName.textContent = "Only letters allowed in Last Name.";
+        errors.lastName.classList.remove('hidden-error');
         hasError = true;
     }
 
     if (!emailRegex.test(email)) {
         errors.email.textContent = "Please enter a valid email.";
+        errors.email.classList.remove('hidden-error');
         hasError = true;
     }
 
     if (!phoneRegex.test(phone)) {
         errors.phone.textContent = "Phone must be 10-12 digits.";
+        errors.phone.classList.remove('hidden-error');
         hasError = true;
     }
 
     if (password.length < 8) {
         errors.password.textContent = "Password must be at least 8 characters.";
+        errors.password.classList.remove('hidden-error');
         hasError = true;
     }
 
-    // If validation fails, stop here
     if (hasError) {
         return;
     }
 
-    // If validation passes, submit to API
     try {
         const res = await fetch('/api/signup', {
             method: 'POST',
@@ -82,8 +85,7 @@ document.querySelector("form").addEventListener("submit", async function (e) {
             setTimeout(() => {
                 window.location = '/public/signin.html';
             }, 1500);
-        }
-        else {
+        } else {
             showModalFail(json.message || 'Registration failed. Please try again.');
         }
     } catch (error) {
