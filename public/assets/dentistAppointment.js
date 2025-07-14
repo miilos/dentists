@@ -2,7 +2,7 @@
 
 const role = localStorage.getItem('role');
 if (!role || role !== 'dentist') {
-    window.location.href = '/dentists/public/signin.html';
+    window.location.href = '/public/signin.html';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (missed) {
                 const userId = calendar.getEventById(id).extendedProps.user_id;
                 if (!userId) throw new Error('Missing user ID for appointment');
-                const resMissed = await fetch(`/dentists/api/missedAppointment/${userId}`, {
+                const resMissed = await fetch(`/api/missedAppointment/${userId}`, {
                     method: 'GET',
                     credentials: 'include'
                 });
