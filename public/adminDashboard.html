@@ -1,159 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>Dentist Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="assets/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/style.css" />
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-        <span class="navbar-brand">Admin Dashboard</span>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav">
+        <span class="navbar-brand mb-0 h1">Dentist Dashboard</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link " href="" id="logout-link">Logout</a>
+                    <a class="nav-link btn" href="allRecord.html">Patients Records</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="" id="logout-link">Logout</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-<div class="container mt-4">
-<h2 class="text-center mb-4">Manage Users</h2>
-<table class="table table-bordered table-dark">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>First name</th>
-        <th>Last name</th>
-        <th>Email</th>
-        <th>Missed appointments</th>
-        <th>Ban status</th>
-    </tr>
-    </thead>
-    <tbody id="usersTable"></tbody>
-</table>
-</div>
-<hr class="my-5">
 
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Manage Dentists</h2>
-    <table class="table table-bordered table-dark">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Email</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody id="dentistsTable"></tbody>
-    </table>
+<div class="container mt-4 flex-grow-1">
+    <h2 class="mb-4 text-center">Work Calendar & Treatments</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div id="calendar" class="mb-5"></div>
+        </div>
     </div>
 
-    <div id="editFormContainer" role="region" aria-label="Edit Dentists Form">
-    <!--        <h4>Edit Appointment</h4>-->
-            <form id="editForm">
-                <input type="hidden" id="dentistId" />
-    
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <form id="appointmentForm" class="mb-5 p-4 border rounded shadow-sm">
+                <h4 class="mb-3">Edit Appointment</h4>
+                <input type="hidden" id="appointmentId" name="appointmentId" />
                 <div class="mb-3">
-                    <label for="dentistFirstName" class="form-label">First Name:</label>
-                    <input type="text" id="dentistFirstName" class="form-control" />
+                    <label for="appointmentDate" class="form-label">Date & Time</label>
+                    <input type="datetime-local" id="appointmentDate" class="form-control" />
                 </div>
-    
                 <div class="mb-3">
-                    <label for="dentistLastName" class="form-label">Last Name:</label>
-                    <input type="text" id="dentistLastName" class="form-control" />
+                    <label for="appointmentNotes" class="form-label">Treatment Notes</label>
+                    <textarea id="appointmentNotes" class="form-control" rows="3"></textarea>
                 </div>
-
-                <div class="mb-3">
-                    <label for="dentistPhoto" class="form-label">Photo:</label>
-                    <input type="text" id="dentistPhoto" class="form-control" />
+                <div class="form-check mb-3">
+                    <input type="checkbox" id="missedCheckbox" class="form-check-input" />
+                    <label class="form-check-label" for="missedCheckbox">Patient missed the appointment</label>
                 </div>
-    
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn me-2"
-                            onclick="document.getElementById('editFormContainer').style.display = 'none';">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn">Save Changes</button>
+                    <button type="submit" class="btn me-2">Save Treatment</button>
+                    <button id="deleteBtn" type="button" class="btn ">Delete Appointment</button>
                 </div>
             </form>
         </div>
     </div>
-    
-
-    <hr class="my-5">
-
-    <div class="container mt-4">
-        <h2 class="text-center mb-4">Manage Services</h2>
-        <table class="table table-bordered table-dark">
-            <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Duration (min)</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody id="servicesTable"></tbody>
-        </table>
-        </div>
-    
-        <div id="editServicesFormContainer" role="region" aria-label="Edit Services Form">
-        <!--        <h4>Edit Appointment</h4>-->
-                <form id="editServicesForm">
-                    <input type="hidden" id="serviceId" />
-        
-                    <div class="mb-3">
-                        <label for="serviceName" class="form-label">Name:</label>
-                        <input type="text" id="serviceName" class="form-control" />
-                    </div>
-        
-                    <div class="mb-3">
-                        <label for="servicePrice" class="form-label">Price:</label>
-                        <input type="text" id="servicePrice" class="form-control" />
-                    </div>
-    
-                    <div class="mb-3">
-                        <label for="serviceDuration" class="form-label">Duration:</label>
-                        <input type="text" id="serviceDuration" class="form-control" />
-                    </div>
-        
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn me-2"
-                                onclick="document.getElementById('editServicesFormContainer').style.display = 'none';">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-    
-        <hr class="my-5">    
-
-<div class="modal-container">
-    <span class="material-symbols-outlined modal-close-btn">
-        close
-    </span>
-    <h1 class="modal-title"></h1>
 </div>
 
-<footer class="text-center mt-5 p-3">
-    &copy; 2025 Dentists
-</footer>
+<footer class="text-center py-3 mt-auto">&copy; 2025 Dentists</footer>
 
-<script src="/public/assets/modal.js"></script>
-<script src="/public/assets/adminDashboard.js"></script>
-<script src="/public/assets/logout.js"></script>
+<script src="https://unpkg.com/fullcalendar@5.11.3/main.min.js"></script>
+<script src="/dentists/public/assets/dentistAppointment.js"></script>
+<script src="/dentists/public/assets/logout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

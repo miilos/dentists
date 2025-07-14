@@ -237,9 +237,9 @@ class AppointmentModel
         $dbh = Db::getConnection();
         $query = "SELECT a.id AS appointment_id, a.dentist_id, a.scheduled_at, a.price, a.duration, a.note, 
                      u.id AS user_id, u.first_name, u.last_name
-                    FROM appointment a
-                    INNER JOIN user u ON a.user_id = u.id
-                    WHERE a.dentist_id = :id";
+              FROM appointment a
+              INNER JOIN user u ON a.user_id = u.id
+              WHERE a.dentist_id = :id";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
@@ -262,11 +262,7 @@ class AppointmentModel
             ];
         }
 
-        if (!$appointments) {
-            return [];
-        }
-
-        return $appointments;
+        return $appointments ?: [];
     }
 
     public function getAppointmentByCode(int $userId, string $appointmentCode): array

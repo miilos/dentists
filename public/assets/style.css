@@ -140,7 +140,11 @@ footer{
 }
 
 /* Renamed .err to .error-message for clarity */
+<<<<<<< HEAD
 .err, .error-message {
+=======
+.err, .error-message{
+>>>>>>> e03089ad926c70ec52f0cc314b8596bb6e3b79cf
     color: #c74933;
     min-height: 1.2em; /* Reserve space to prevent layout shifts */
     display: block; /* Ensure it takes up space when visible */
