@@ -11,7 +11,7 @@
   <title>Profile</title>
   <script src="assets/modal.js"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg ">
   <div class="container-fluid">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -36,64 +36,78 @@
     </div>
   </div>
 </nav>
-<section class="container vh-100 d-flex justify-content-center align-items-center">
-<form id="profile-form" class="w-50 mx-auto border-container">
-  <h2>USER INFORMATION</h2>
-  <div class="mb-3">
-    <label for="first_name">First Name</label>
-    <input type="text" class="form-control" id="first_name" name="first_name" autocomplete="given-name">
-    <span class="text-danger small" id="error-first-name"></span>
-  </div>
 
-  <div class="mb-3">
-    <label for="last_name">Last Name</label>
-    <input type="text" class="form-control" id="last_name" name="last_name" autocomplete="family-name">
-    <span class="text-danger small" id="error-last-name"></span>
-  </div>
+<!-- User Information Section -->
+<section class="container flex-grow-1 d-flex justify-content-center align-items-center py-5">
+  <div class="row justify-content-center w-100">
+    <div class="col-12 col-md-8 col-lg-6">
+      <form id="profile-form" class="border-container p-4">
+        <h2 class="mb-4 text-center">USER INFORMATION</h2>
+        <div class="mb-3">
+          <label for="first_name" class="form-label">First Name</label>
+          <input type="text" class="form-control" id="first_name" name="first_name" autocomplete="given-name">
+          <span class="text-danger small" id="error-first-name"></span>
+        </div>
 
-  <div class="mb-3">
-    <label for="email">Email</label>
-    <input type="email" class="form-control" id="email" name="email" readonly autocomplete="email">
-  </div>
+        <div class="mb-3">
+          <label for="last_name" class="form-label">Last Name</label>
+          <input type="text" class="form-control" id="last_name" name="last_name" autocomplete="family-name">
+          <span class="text-danger small" id="error-last-name"></span>
+        </div>
 
-  <div class="mb-3">
-    <label for="phone">Phone number</label>
-    <input type="tel" class="form-control" id="phone" name="phone" autocomplete="tel">
-    <span class="text-danger small" id="error-phone"></span>
-  </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" readonly autocomplete="email">
+        </div>
 
-  <div class="mb-3">
-    <a href="/public/resetPassword.html">Click to change password</a>
-  </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone number</label>
+          <input type="tel" class="form-control" id="phone" name="phone" autocomplete="tel">
+          <span class="text-danger small" id="error-phone"></span>
+        </div>
 
-  <button type="submit" class="btn ">Save changes</button>
-</form>
-</section>
-<section class="container vh-100 d-flex justify-content-center align-items-center">
-  <div class="w-75 mx-auto">
-    <h3 class="mb-3">Your Health Record</h3>
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped" id="ehr-table">
-        <thead class="table-dark">
-        <tr>
-          <th>Date</th>
-          <th>Dentist</th>
-          <th>Service</th>
-          <th>Note</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Records will be inserted here -->
-        </tbody>
-      </table>
+        <div class="mb-3 text-center">
+          <a href="/dentists/public/resetPassword.html">Click to change password</a>
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="btn w-50">Save changes</button>
+        </div>
+      </form>
     </div>
   </div>
 </section>
-<footer class="text-center">
-  <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+
+<!-- Health Record Section -->
+<section class="container flex-grow-1 d-flex justify-content-center align-items-center py-5">
+  <div class="row justify-content-center w-100">
+    <div class="col-12 col-md-10 col-lg-8">
+      <h3 class="mb-3 text-center">Your Health Record</h3>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="ehr-table">
+          <thead class="table-dark">
+          <tr>
+            <th>Date</th>
+            <th>Dentist</th>
+            <th>Service</th>
+            <th>Note</th>
+          </tr>
+          </thead>
+          <tbody>
+          <!-- Records will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="text-center py-2 mt-auto">
+  <div class="text-center p-2" style="background-color: rgba(0, 0, 0, 0.05);">
     &copy; 2025 Dentists
   </div>
 </footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/userProfile.js"></script>
 <script src="assets/logout.js"></script>
