@@ -158,7 +158,6 @@ class AuthController extends BaseController
     }
 
     #[Route(path: '/api/forgotPassword', method: 'get')]
-    #[Middleware(function: [AuthMiddleware::class, 'authenticate'])]
     public function forgotPassword(Request $req): JSONResponse
     {
         $resetToken = TokenGenerator::generate(16);
