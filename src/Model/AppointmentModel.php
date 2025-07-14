@@ -235,7 +235,11 @@ class AppointmentModel
     public function getAllAppointmentsForDentist(int $id): array
     {
         $dbh = Db::getConnection();
-        $query = "SELECT * FROM appointment a INNER JOIN user u ON a.user_id = u.id WHERE dentist_id = :id";
+        $query = "SELECT a.id AS appointment_id, a.dentist_id, a.scheduled_at, a.price, a.duration, a.note, 
+                     u.id AS user_id, u.first_name, u.last_name
+              FROM appointment a
+              INNER JOIN user u ON a.user_id = u.id
+              WHERE a.dentist_id = :id";
         $stmt = $dbh->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
@@ -244,7 +248,7 @@ class AppointmentModel
         $appointments = [];
         foreach ($data as $appointment) {
             $appointments[] = [
-                'id' => $appointment['id'],
+                'id' => $appointment['appointment_id'],
                 'dentist_id' => $appointment['dentist_id'],
                 'scheduled_at' => $appointment['scheduled_at'],
                 'price' => $appointment['price'],
@@ -258,11 +262,7 @@ class AppointmentModel
             ];
         }
 
-        if (!$appointments) {
-            return [];
-        }
-
-        return $appointments;
+        return $appointments ?: [];
     }
 
     public function getAppointmentByCode(int $userId, string $appointmentCode): array
