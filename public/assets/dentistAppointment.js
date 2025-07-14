@@ -1,8 +1,8 @@
 'use strict';
 
-const role = localStorage.getItem('role')
+const role = localStorage.getItem('role');
 if (!role || role !== 'dentist') {
-    window.location.href = '/public/signin.html'
+    window.location.href = '/dentists/public/signin.html';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -15,11 +15,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const missedCheckbox = document.getElementById('missedCheckbox');
     const deleteBtn = document.getElementById('deleteBtn');
 
-
     const dentistId = localStorage.getItem('dentistId');
 
     if (!dentistId) {
-        alert('Dentist not logged in! Please set dentistId in localStorage.');
+        alert('Dentist not logged in! Please login again.');
+        window.location.href = '/dentists/public/signin.html';
         return;
     }
 
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const dt = new Date(dateStr);
         const off = dt.getTimezoneOffset();
         const local = new Date(dt.getTime() - off * 60000);
-        return local.toISOString().slice(0,16);
+        return local.toISOString().slice(0, 16);
     };
 
     const toBackendDateTime = (datetimeLocal) => {
@@ -35,7 +35,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     async function fetchAppointments() {
-        const res = await fetch(`/api/appointments/dentist/${dentistId}`);
+        const res = await fetch(`/api/appointments/dentist/${dentistId}`, {
+            credentials: 'include'
+        });
         if (!res.ok) throw new Error('Failed to load appointments');
         const data = await res.json();
         return data.data.appointments;
@@ -61,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     extendedProps: {
                         note: app.note || '',
                         missed: false,
-                        user_id: app.user?.id || null
+                        user_id: app.user?.id || app.user_id || null
                     },
                     color: '#3c8dbc'
                 }));
@@ -74,10 +76,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             const event = info.event;
             const now = new Date();
 
+            console.log('Clicked appointment ID:', event.id);
+
+            if (!event.id || isNaN(event.id)) {
+                alert('Invalid appointment selected.');
+                return;
+            }
+
             appointmentIdInput.value = event.id;
             appointmentDateInput.value = toDatetimeLocal(event.startStr);
             appointmentDateInput.disabled = event.start < now;
-            appointmentNotesInput.value = event.extendedProps.note;
+
+            appointmentNotesInput.value = event.extendedProps.note || '';
             missedCheckbox.checked = false;
             missedCheckbox.disabled = false;
 
@@ -95,8 +105,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const note = appointmentNotesInput.value.trim();
         const missed = missedCheckbox.checked;
 
-        if (!id) {
-            alert('Select an appointment first.');
+        if (!id || isNaN(id)) {
+            alert('Select a valid appointment first.');
             return;
         }
 
@@ -104,21 +114,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             const now = new Date();
             const selectedDate = new Date(newDate);
 
-            /*
             if (selectedDate > now) {
-                console.log(JSON.stringify({ newDate: toBackendDateTime(newDate) }))                
                 const resTime = await fetch(`/api/appointments/${id}/editTime`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({ newDate: toBackendDateTime(newDate) })
                 });
                 if (!resTime.ok) throw new Error('Failed to update appointment time');
             }
-                */
 
             const resNote = await fetch(`/api/appointments/${id}/note`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ note })
             });
             if (!resNote.ok) throw new Error('Failed to update appointment note');
@@ -126,8 +135,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (missed) {
                 const userId = calendar.getEventById(id).extendedProps.user_id;
                 if (!userId) throw new Error('Missing user ID for appointment');
-                const resMissed = await fetch(`/api/missedAppointment/${userId}`, {
-                    method: 'GET'
+                const resMissed = await fetch(`/dentists/api/missedAppointment/${userId}`, {
+                    method: 'GET',
+                    credentials: 'include'
                 });
                 if (!resMissed.ok) throw new Error('Failed to record missed appointment');
             }
@@ -141,8 +151,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     deleteBtn.addEventListener('click', async () => {
         const id = appointmentIdInput.value;
-        if (!id) {
-            alert('Select an appointment first.');
+        if (!id || isNaN(id)) {
+            alert('Select a valid appointment first.');
             return;
         }
 
@@ -150,8 +160,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const res = await fetch(`/api/appointments/${id}/delete`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                credentials: 'include'
             });
+
             if (!res.ok) throw new Error('Failed to delete appointment');
 
             alert('Appointment deleted successfully!');
